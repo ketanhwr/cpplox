@@ -2,6 +2,14 @@
 #include <string>
 #include <fstream>
 
+#include "scanner.hpp"
+
+void run(const std::string& program)
+{
+    Scanner scanner;
+
+}
+
 std::string readFromFile(const char* fileName)
 {
     std::ifstream file{fileName, std::ios_base::in | std::ios_base::binary};
@@ -20,28 +28,37 @@ std::string readFromFile(const char* fileName)
     return contents;
 }
 
-enum class tokenType
+void runFromFile(const char *file)
 {
-    // Single character tokens
-    LEFT_PAREN,
-    RIGHT_PAREN,
+    std::string fileContents{readFromFile(file)};
 
-    // Literals
-    
-    // Language Types
+    std::cout << "File contents: \n" << fileContents << std::endl;
+}
 
-};
+void runFromPrompt()
+{
+    std::cout << "Lox REPL" << std::endl;
+
+    std::string line;
+
+    std::cout << "lox> ";
+    while (std::getline(std::cin, line)) {
+        std::cout << "You entered [" << line.size() << "] characters: " << line << std::endl;
+
+        std::cout << "lox> ";
+    }
+}
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <src-file>" << std::endl;
+    if (argc > 2) {
+        std::cout << "Usage: " << argv[0] << " [script]" << std::endl;
         return 1;
+    } else if (argc == 2) {
+        runFromFile(argv[1]);
+    } else {
+        runFromPrompt();
     }
-
-    std::string fileContents = readFromFile(argv[1]);
-
-    std::cout << "File contents: \n" << fileContents << std::endl;
 
     return 0;
 }
