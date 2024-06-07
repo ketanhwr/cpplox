@@ -6,8 +6,9 @@
 
 void run(const std::string& program)
 {
-    Scanner scanner;
+    Scanner scanner{program};
 
+    std::vector<Token> tokens = scanner.scanTokens();
 }
 
 std::string readFromFile(const char* fileName)
