@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <variant>
 
 enum class TokenType
 {
@@ -23,8 +24,12 @@ enum class TokenType
 
 struct Token {
     TokenType tokenType_;
+    std::variant<std::string, double> value_;
 
     Token(TokenType tokenType);
+
+    template <typename T>
+    Token(TokenType tokenType, T value) : tokenType_{tokenType}, value_{value} {}
 
     friend std::ostream& operator<<(std::ostream& out, Token& token);
 };
@@ -32,18 +37,34 @@ struct Token {
 class Scanner
 {
     const std::string& program_;
-    size_t idx_{0};
+    std::vector<Token> tokens_;
+
+    size_t current_{0};
+    size_t start_{0};
 
     bool atEnd();
 
     char advance();
     char peek();
+    char peekNext();
 
     bool match(char c);
     
     void addToken(TokenType tokenType);
 
-    std::vector<Token> tokens_;
+    template <typename T>
+    void addToken(TokenType tokenType, T value)
+    {
+        tokens_.emplace_back(tokenType, value);
+    }
+
+    void parseString();
+    void parseNumber();
+    void parseIdentifier();
+
+    bool isNum(char c);
+    bool isAlpha(char c);
+    bool isAlphaNum(char c);
 
 public:
     Scanner(const std::string& program);

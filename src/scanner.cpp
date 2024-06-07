@@ -1,10 +1,39 @@
 #include "scanner.hpp"
 
 #include <iostream>
+#include <unordered_map>
+
+namespace {
+    const static std::unordered_map<std::string, TokenType> reservedIdentifiers = {
+        { "and", TokenType::AND},
+        { "class", TokenType::CLASS},
+        { "else", TokenType::ELSE},
+        { "false", TokenType::FALSE},
+        { "fun", TokenType::FUN},
+        { "for", TokenType::FOR},
+        { "if", TokenType::IF},
+        { "nul", TokenType::NUL},
+        { "or", TokenType::OR},
+        { "print", TokenType::PRINT},
+        { "return", TokenType::RETURN},
+        { "super", TokenType::SUPER},
+        { "this", TokenType::THIS},
+        { "true", TokenType::TRUE},
+        { "var", TokenType::VAR},
+        { "while", TokenType::WHILE}
+    };
+}
 
 std::ostream& operator<<(std::ostream& out, Token& token)
 {
     out << "Type [" << static_cast<int>(token.tokenType_) << ']';
+
+    if (token.tokenType_ == TokenType::STRING) {
+        out << "\tValue [" << std::get<std::string>(token.value_) << ']';
+    } else if (token.tokenType_ == TokenType::NUMBER) {
+        out << "\tValue [" << std::get<double>(token.value_) << ']';
+    }
+
     return out;
 }
 
@@ -20,17 +49,24 @@ Scanner::Scanner(const std::string& program)
 
 bool Scanner::atEnd()
 {
-    return (idx_ >= program_.size());
+    return (current_ >= program_.size());
 }
 
 char Scanner::advance()
 {
-    return program_[idx_++];
+    return program_[current_++];
 }
 
 char Scanner::peek()
 {
-    return program_[idx_];
+    if (atEnd()) return '\0';
+    return program_[current_];
+}
+
+char Scanner::peekNext()
+{
+    if (current_ + 1 >= program_.size()) return '\0';
+    return program_[current_ + 1];
 }
 
 bool Scanner::match(char c)
@@ -49,10 +85,86 @@ void Scanner::addToken(TokenType tokenType)
     tokens_.emplace_back(tokenType);
 }
 
+void Scanner::parseString()
+{
+    while (peek() != '"' && !atEnd()) {
+        if (peek() == '\n') {
+            // line_++;
+        }
+
+        advance();
+    }
+
+    if (atEnd()) {
+        std::cerr << "Unterminated string" << std::endl;
+        return;
+    }
+
+    advance();
+
+    std::string value = program_.substr(start_ + 1, (current_ - start_ - 2));
+    addToken(TokenType::STRING, value);
+}
+
+void Scanner::parseNumber()
+{
+    while (isNum(peek())) {
+        advance();
+    }
+
+    if (peek() == '.' && isNum(peekNext())) {
+        advance();
+        while (isNum(peek())) {
+            advance();
+        }
+    }
+
+    std::string value = program_.substr(start_, (current_ - start_));
+    addToken(TokenType::NUMBER, std::stod(value));
+}
+
+void Scanner::parseIdentifier()
+{
+    while (isAlphaNum(peek())) {
+        advance();
+    }
+
+    std::string value = program_.substr(start_, (current_ - start_));
+
+    TokenType tokenType;
+    
+    auto it = reservedIdentifiers.find(value);
+    if (it != reservedIdentifiers.end()) {
+        tokenType = it->second;
+    } else {
+        tokenType = TokenType::IDENTIFIER;
+    }
+
+    addToken(tokenType);
+}
+
+bool Scanner::isNum(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+bool Scanner::isAlpha(char c)
+{
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+}
+
+bool Scanner::isAlphaNum(char c)
+{
+    return isAlpha(c) || isNum(c);
+}
+
 std::vector<Token> Scanner::scanTokens()
 {
-    while (idx_ != program_.size()) {
+    while (!atEnd()) {
+        start_ = current_;
+
         char c = advance();
+
         switch (c) {
             // Single character tokens
             case '(': addToken(TokenType::LEFT_PAREN); break;
@@ -64,7 +176,6 @@ std::vector<Token> Scanner::scanTokens()
             case '-': addToken(TokenType::MINUS); break;
             case '+': addToken(TokenType::PLUS); break;
             case ';': addToken(TokenType::SEMICOLON); break;
-            case '/': addToken(TokenType::SLASH); break;
             case '*': addToken(TokenType::STAR); break;
             
             // Single or double character tokens
@@ -85,8 +196,43 @@ std::vector<Token> Scanner::scanTokens()
                 break;
             }
 
+            case '/': {
+                // Handle comments
+                if (match('/')) {
+                    while (!atEnd() && peek() != '\n') {
+                        advance();
+                    }
+                } else {
+                    addToken(TokenType::SLASH); break;
+                }
+                break;
+            }
+
             // Literals
+            case '"': {
+                parseString();
+                break;
+            }
+
+            case ' ':
+            case '\t':
+            case '\r':
+                break;
             
+            case '\n': {
+                // line_++;
+                break;
+            }
+
+            default: {
+                if (isNum(c)) {
+                    parseNumber();
+                } else if (isAlpha(c)) {
+                    parseIdentifier();
+                } else {
+                    std::cerr << "Unexpected character [" << c << "] at line number [" << ']' << std::endl;
+                }
+            }
         }
     }
 
