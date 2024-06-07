@@ -1,10 +1,9 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 #include <string>
 
-enum class TokenType : uint8_t
+enum class TokenType
 {
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
     COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
@@ -27,7 +26,7 @@ struct Token {
 
     Token(TokenType tokenType);
 
-    std::ostream& operator<<(std::ostream& out);
+    friend std::ostream& operator<<(std::ostream& out, Token& token);
 };
 
 class Scanner
@@ -35,10 +34,16 @@ class Scanner
     const std::string& program_;
     size_t idx_{0};
 
+    bool atEnd();
+
     char advance();
     char peek();
 
-    bool check(char c);
+    bool match(char c);
+    
+    void addToken(TokenType tokenType);
+
+    std::vector<Token> tokens_;
 
 public:
     Scanner(const std::string& program);

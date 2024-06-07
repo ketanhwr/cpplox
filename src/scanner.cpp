@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-std::ostream& Token::operator<<(std::ostream& out)
+std::ostream& operator<<(std::ostream& out, Token& token)
 {
-    out << "Type [" << static_cast<uint8_t>(tokenType_) << ']';
+    out << "Type [" << static_cast<int>(token.tokenType_) << ']';
     return out;
 }
 
@@ -18,6 +18,11 @@ Scanner::Scanner(const std::string& program)
 {
 }
 
+bool Scanner::atEnd()
+{
+    return (idx_ >= program_.size());
+}
+
 char Scanner::advance()
 {
     return program_[idx_++];
@@ -28,66 +33,55 @@ char Scanner::peek()
     return program_[idx_];
 }
 
-bool Scanner::check(char c)
+bool Scanner::match(char c)
 {
-    return (idx_ < program_.size() && peek() == c);
+    if (atEnd()) return false;
+    if (peek() == c) {
+        advance();
+        return true;
+    }
+
+    return false;
+}
+
+void Scanner::addToken(TokenType tokenType)
+{
+    tokens_.emplace_back(tokenType);
 }
 
 std::vector<Token> Scanner::scanTokens()
 {
-    std::vector<Token> tokens;
-
     while (idx_ != program_.size()) {
         char c = advance();
         switch (c) {
             // Single character tokens
-            case '(': tokens.emplace_back(TokenType::LEFT_PAREN); break;
-            case ')': tokens.emplace_back(TokenType::RIGHT_PAREN); break;
-            case '{': tokens.emplace_back(TokenType::LEFT_BRACE); break;
-            case '}': tokens.emplace_back(TokenType::RIGHT_BRACE); break;
-            case ',': tokens.emplace_back(TokenType::COMMA); break;
-            case '.': tokens.emplace_back(TokenType::DOT); break;
-            case '-': tokens.emplace_back(TokenType::MINUS); break;
-            case '+': tokens.emplace_back(TokenType::PLUS); break;
-            case ';': tokens.emplace_back(TokenType::SEMICOLON); break;
-            case '/': tokens.emplace_back(TokenType::SLASH); break;
-            case '*': tokens.emplace_back(TokenType::STAR); break;
+            case '(': addToken(TokenType::LEFT_PAREN); break;
+            case ')': addToken(TokenType::RIGHT_PAREN); break;
+            case '{': addToken(TokenType::LEFT_BRACE); break;
+            case '}': addToken(TokenType::RIGHT_BRACE); break;
+            case ',': addToken(TokenType::COMMA); break;
+            case '.': addToken(TokenType::DOT); break;
+            case '-': addToken(TokenType::MINUS); break;
+            case '+': addToken(TokenType::PLUS); break;
+            case ';': addToken(TokenType::SEMICOLON); break;
+            case '/': addToken(TokenType::SLASH); break;
+            case '*': addToken(TokenType::STAR); break;
             
             // Single or double character tokens
             case '!': {
-                if (check('=')) {
-                    tokens.emplace_back(TokenType::BANG_EQUAL);
-                    advance();
-                } else {
-                    tokens.emplace_back(TokenType::BANG);
-                }
+                addToken(match('=') ? TokenType::BANG_EQUAL : TokenType::BANG);
                 break;
             }
             case '=': {
-                if (check('=')) {
-                    tokens.emplace_back(TokenType::EQUAL_EQUAL);
-                    advance();
-                } else {
-                    tokens.emplace_back(TokenType::EQUAL);
-                }
+                addToken(match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL);
                 break;
             }
             case '<': {
-                if (check('=')) {
-                    tokens.emplace_back(TokenType::LESS_EQUAL);
-                    advance();
-                } else {
-                    tokens.emplace_back(TokenType::LESS);
-                }
+                addToken(match('=') ? TokenType::LESS_EQUAL : TokenType::LESS);
                 break;
             }
             case '>': {
-                if (check('=')) {
-                    tokens.emplace_back(TokenType::GREATER_EQUAL);
-                    advance();
-                } else {
-                    tokens.emplace_back(TokenType::GREATER);
-                }
+                addToken(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
                 break;
             }
 
@@ -96,6 +90,6 @@ std::vector<Token> Scanner::scanTokens()
         }
     }
 
-    return tokens;
+    return tokens_;
 }
 

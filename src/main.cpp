@@ -9,6 +9,10 @@ void run(const std::string& program)
     Scanner scanner{program};
 
     std::vector<Token> tokens = scanner.scanTokens();
+
+    for (auto& token: tokens) {
+        std::cout << token << std::endl;
+    }
 }
 
 std::string readFromFile(const char* fileName)
@@ -34,6 +38,8 @@ void runFromFile(const char *file)
     std::string fileContents{readFromFile(file)};
 
     std::cout << "File contents: \n" << fileContents << std::endl;
+
+    run(fileContents);
 }
 
 void runFromPrompt()
@@ -45,6 +51,8 @@ void runFromPrompt()
     std::cout << "lox> ";
     while (std::getline(std::cin, line)) {
         std::cout << "You entered [" << line.size() << "] characters: " << line << std::endl;
+
+        run(line);
 
         std::cout << "lox> ";
     }
