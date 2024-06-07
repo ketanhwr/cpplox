@@ -58,7 +58,9 @@ std::ostream& operator<<(std::ostream& out, Token& token)
         out << "\tValue [" << std::get<double>(token.value_) << ']';
     }
 
-    out << "\tLexeme [" << token.lexeme_ << "]\tLine [" << token.line_ << ']';
+    if (token.tokenType_ != TokenType::END_OF_FILE) {
+        out << "\tLexeme [" << token.lexeme_ << "]\tLine [" << token.line_ << ']';
+    }
 
     return out;
 }

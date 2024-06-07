@@ -185,6 +185,16 @@ std::optional<std::vector<Token>> Scanner::scanTokens()
                     while (!atEnd() && peek() != '\n') {
                         advance();
                     }
+                } else if (match('*')) {
+                    while (!(atEnd() || (peek() == '*' && peekNext() == '/'))) {
+                        advance();
+                    }
+                    // We either reached end of file OR end of comment
+                    if (!atEnd()) {
+                        // Consume end of comment '*/'
+                        advance();
+                        advance();
+                    }
                 } else {
                     addToken(TokenType::SLASH); break;
                 }
@@ -223,6 +233,8 @@ std::optional<std::vector<Token>> Scanner::scanTokens()
     if (hasError_) {
         return std::nullopt;
     } else {
+        addToken(TokenType::END_OF_FILE);
+
         return tokens_;
     }
 }
