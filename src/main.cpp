@@ -8,10 +8,13 @@ void run(const std::string& program)
 {
     Scanner scanner{program};
 
-    std::vector<Token> tokens = scanner.scanTokens();
+    auto tokens = scanner.scanTokens();
 
-    for (auto& token: tokens) {
-        std::cout << token << std::endl;
+    // Only output tokens if no error
+    if (tokens) {
+        for (auto& token: tokens.value()) {
+            std::cout << token << std::endl;
+        }
     }
 }
 

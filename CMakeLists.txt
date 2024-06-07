@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(cpplox
     src/main.cpp
     src/scanner.cpp
+    src/token.cpp
 )
 
 target_include_directories(cpplox

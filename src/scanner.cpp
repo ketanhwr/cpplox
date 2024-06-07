@@ -24,24 +24,6 @@ namespace {
     };
 }
 
-std::ostream& operator<<(std::ostream& out, Token& token)
-{
-    out << "Type [" << static_cast<int>(token.tokenType_) << ']';
-
-    if (token.tokenType_ == TokenType::STRING) {
-        out << "\tValue [" << std::get<std::string>(token.value_) << ']';
-    } else if (token.tokenType_ == TokenType::NUMBER) {
-        out << "\tValue [" << std::get<double>(token.value_) << ']';
-    }
-
-    return out;
-}
-
-Token::Token(TokenType tokenType)
-    : tokenType_{tokenType}
-{
-}
-
 Scanner::Scanner(const std::string& program)
     : program_{program}
 {
@@ -82,14 +64,14 @@ bool Scanner::match(char c)
 
 void Scanner::addToken(TokenType tokenType)
 {
-    tokens_.emplace_back(tokenType);
+    addToken(tokenType, 0.0);
 }
 
 void Scanner::parseString()
 {
     while (peek() != '"' && !atEnd()) {
         if (peek() == '\n') {
-            // line_++;
+            line_++;
         }
 
         advance();
@@ -97,6 +79,7 @@ void Scanner::parseString()
 
     if (atEnd()) {
         std::cerr << "Unterminated string" << std::endl;
+        hasError_ = true;
         return;
     }
 
@@ -158,7 +141,7 @@ bool Scanner::isAlphaNum(char c)
     return isAlpha(c) || isNum(c);
 }
 
-std::vector<Token> Scanner::scanTokens()
+std::optional<std::vector<Token>> Scanner::scanTokens()
 {
     while (!atEnd()) {
         start_ = current_;
@@ -220,7 +203,7 @@ std::vector<Token> Scanner::scanTokens()
                 break;
             
             case '\n': {
-                // line_++;
+                line_++;
                 break;
             }
 
@@ -230,12 +213,17 @@ std::vector<Token> Scanner::scanTokens()
                 } else if (isAlpha(c)) {
                     parseIdentifier();
                 } else {
-                    std::cerr << "Unexpected character [" << c << "] at line number [" << ']' << std::endl;
+                    std::cerr << "Unexpected character [" << c << "] at line number [" << line_ << ']' << std::endl;
+                    hasError_ = true;
                 }
             }
         }
     }
 
-    return tokens_;
+    if (hasError_) {
+        return std::nullopt;
+    } else {
+        return tokens_;
+    }
 }
 
