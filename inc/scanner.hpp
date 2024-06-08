@@ -28,8 +28,7 @@ class Scanner
     
     void addToken(TokenType tokenType);
 
-    template <typename T>
-    void addToken(TokenType tokenType, T value)
+    void addToken(TokenType tokenType, std::shared_ptr<LoxValue> value)
     {
         std::string lexeme = program_.substr(start_, current_ - start_);
         tokens_.emplace_back(tokenType, value, lexeme, line_);

@@ -8,7 +8,9 @@ def define_ast(output_dir, base_class, ast_types):
         output_file.write("#include \"token.hpp\"\n\n")
 
         output_file.write(f"struct {base_class}\n")
-        output_file.write("{ };\n\n")
+        output_file.write("{\n")
+        output_file.write(f"\tvirtual ~{base_class}() = 0;\n")
+        output_file.write("};\n\n")
 
         for k in ast_types:
             output_file.write(f"struct {k};\n");
@@ -44,7 +46,7 @@ def main():
     define_ast(sys.argv[1], "Expr", {
         "Binary": "Expr left | Token op | Expr right",
         "Grouping": "Expr expression",
-        "Literal": "std::variant<std::string,double> value",
+        "Literal": "LoxValue value",
         "Unary": "Token op | Expr right"
     })
 

@@ -64,7 +64,7 @@ bool Scanner::match(char c)
 
 void Scanner::addToken(TokenType tokenType)
 {
-    addToken(tokenType, 0.0);
+    addToken(tokenType, nullptr);
 }
 
 void Scanner::parseString()
@@ -86,16 +86,19 @@ void Scanner::parseString()
     advance();
 
     std::string value = program_.substr(start_ + 1, (current_ - start_ - 2));
-    addToken(TokenType::STRING, value);
+    addToken(TokenType::STRING, std::make_shared<LoxString>(value));
 }
 
 void Scanner::parseNumber()
 {
+    bool isFloat = false;
+
     while (isNum(peek())) {
         advance();
     }
 
     if (peek() == '.' && isNum(peekNext())) {
+        isFloat = true;
         advance();
         while (isNum(peek())) {
             advance();
@@ -103,7 +106,11 @@ void Scanner::parseNumber()
     }
 
     std::string value = program_.substr(start_, (current_ - start_));
-    addToken(TokenType::NUMBER, std::stod(value));
+    if (isFloat) {
+        addToken(TokenType::NUMBER, std::make_shared<LoxFloat>(std::stod(value)));
+    } else {
+        addToken(TokenType::NUMBER, std::make_shared<LoxInteger>(std::stoll(value)));
+    }
 }
 
 void Scanner::parseIdentifier()

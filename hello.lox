@@ -2,7 +2,7 @@ print "Hello, World!"
 
 // Single line comment
 var a = 10
-a = a + 5   // comment after statement
+a = a + 5.5   // comment after statement
 
 /*
     Multiline

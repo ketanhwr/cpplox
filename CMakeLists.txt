@@ -11,6 +11,7 @@ add_executable(cpplox
     src/main.cpp
     src/scanner.cpp
     src/token.cpp
+    src/value.cpp
 )
 
 target_include_directories(cpplox

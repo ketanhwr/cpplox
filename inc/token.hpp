@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
-#include <variant>
+#include <memory>
+
+#include "value.hpp"
 
 enum class TokenType
 {
@@ -23,17 +24,11 @@ enum class TokenType
 
 struct Token {
     TokenType tokenType_;
-    std::variant<std::string, double> value_;
+    std::shared_ptr<LoxValue> value_;
     std::string lexeme_;
     size_t line_;
 
-    template <typename T>
-    Token(TokenType tokenType, T value, std::string lexeme, size_t line)
-        : tokenType_{tokenType}
-        , value_{value}
-        , lexeme_{lexeme}
-        , line_{line}
-    {}
+    Token(TokenType tokenType, std::shared_ptr<LoxValue> value, std::string lexeme, size_t line);
 
     friend std::ostream& operator<<(std::ostream& out, Token& token);
 };

@@ -48,14 +48,19 @@ const char* getTokenTypeStr(TokenType tokenType)
     }
 }
 
+Token::Token(TokenType tokenType, std::shared_ptr<LoxValue> value, std::string lexeme, size_t line)
+    : tokenType_{tokenType}
+    , value_{value}
+    , lexeme_{lexeme}
+    , line_{line}
+{}
+
 std::ostream& operator<<(std::ostream& out, Token& token)
 {
     out << "Type [" << getTokenTypeStr(token.tokenType_) << ']';
 
-    if (token.tokenType_ == TokenType::STRING) {
-        out << "\tValue [" << std::get<std::string>(token.value_) << ']';
-    } else if (token.tokenType_ == TokenType::NUMBER) {
-        out << "\tValue [" << std::get<double>(token.value_) << ']';
+    if (token.tokenType_ == TokenType::STRING || token.tokenType_ == TokenType::NUMBER) {
+        out << "\tValue [" << *(token.value_) << ']';
     }
 
     if (token.tokenType_ != TokenType::END_OF_FILE) {
