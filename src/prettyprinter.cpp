@@ -24,7 +24,7 @@ struct AstPrinter: public AbstractVisitor
         result_ = std::move(tempResult);
     }
 
-	void visitGroupingExpr(GroupingExpr& expr) override
+    void visitGroupingExpr(GroupingExpr& expr) override
     {
         std::ostringstream tempResult;
 
@@ -37,7 +37,7 @@ struct AstPrinter: public AbstractVisitor
         result_ = std::move(tempResult);
     }
 
-	void visitLiteralExpr(LiteralExpr& expr) override
+    void visitLiteralExpr(LiteralExpr& expr) override
     {
         std::ostringstream tempResult;
 
@@ -46,7 +46,7 @@ struct AstPrinter: public AbstractVisitor
         result_ = std::move(tempResult);
     }
 
-	void visitUnaryExpr(UnaryExpr& expr) override
+    void visitUnaryExpr(UnaryExpr& expr) override
     {
         std::ostringstream tempResult;
 
