@@ -37,13 +37,13 @@ def define_ast(output_dir, base_class, ast_types):
             output_file.write("{\n")
 
             for var in attrs:
-                output_file.write(f"\t{var[0]}& {var[1]}_;\n")
+                output_file.write(f"\tstd::shared_ptr<{var[0]}> {var[1]}_;\n")
 
             output_file.write("\n")
 
             # Constructor
-            c_args = ", ".join([f"{x[0]}& {x[1]}" for x in attrs])
-            init_args = "\t\t, ".join([f"{x[1]}_{{{x[1]}}}\n" for x in attrs])
+            c_args = ", ".join([f"std::shared_ptr<{x[0]}> {x[1]}" for x in attrs])
+            init_args = "\t\t, ".join([f"{x[1]}_{{std::move({x[1]})}}\n" for x in attrs])
 
             output_file.write(f"\t{k}{base_class}({c_args})\n")
             output_file.write(f"\t\t: {init_args}")

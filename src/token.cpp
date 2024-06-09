@@ -34,7 +34,7 @@ const char* getTokenTypeStr(TokenType tokenType)
         case TokenType::FUN: return "FUN";
         case TokenType::FOR: return "FOR";
         case TokenType::IF: return "IF";
-        case TokenType::NUL: return "NUL";
+        case TokenType::NIL: return "NIL";
         case TokenType::OR: return "OR";
         case TokenType::PRINT: return "PRINT";
         case TokenType::RETURN: return "RETURN";

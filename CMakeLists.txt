@@ -33,10 +33,13 @@ add_executable(cpplox
     src/scanner.cpp
     src/token.cpp
     src/value.cpp
+    src/ast_printer.cpp
+    src/parser.cpp
     "${generated_dir}/expr.hpp"
 )
 
 target_include_directories(cpplox PUBLIC
     inc
-    {generated_dir}
+    "${generated_dir}"
 )
+

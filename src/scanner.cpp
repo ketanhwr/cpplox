@@ -12,7 +12,7 @@ namespace {
         { "fun", TokenType::FUN},
         { "for", TokenType::FOR},
         { "if", TokenType::IF},
-        { "nul", TokenType::NUL},
+        { "nil", TokenType::NIL},
         { "or", TokenType::OR},
         { "print", TokenType::PRINT},
         { "return", TokenType::RETURN},
@@ -148,7 +148,7 @@ bool Scanner::isAlphaNum(char c)
     return isAlpha(c) || isNum(c);
 }
 
-std::optional<std::vector<Token>> Scanner::scanTokens()
+std::optional<std::vector<std::shared_ptr<Token>>> Scanner::scanTokens()
 {
     while (!atEnd()) {
         start_ = current_;

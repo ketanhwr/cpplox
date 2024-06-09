@@ -38,3 +38,19 @@ std::ostream& LoxFloat::operator<<(std::ostream& o)
     return o;
 }
 
+LoxBool::LoxBool(bool value)
+    : value_{value}
+{}
+
+std::ostream& LoxBool::operator<<(std::ostream& o)
+{
+    o << value_;
+    return o;
+}
+
+std::ostream& LoxNil::operator<<(std::ostream& o)
+{
+    o << "nil";
+    return o;
+}
+

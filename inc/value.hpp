@@ -40,3 +40,20 @@ struct LoxFloat: public LoxValue
     std::ostream& operator<<(std::ostream& o) override;
 };
 
+struct LoxBool: public LoxValue
+{
+    bool value_;
+
+    LoxBool(bool value);
+    ~LoxBool() = default;
+
+    std::ostream& operator<<(std::ostream& o) override;
+};
+
+struct LoxNil: public LoxValue
+{
+    ~LoxNil() = default;
+
+    std::ostream& operator<<(std::ostream& o) override;
+};
+

@@ -3,6 +3,8 @@
 #include <fstream>
 
 #include "scanner.hpp"
+#include "parser.hpp"
+#include "ast_printer.hpp"
 
 void run(const std::string& program)
 {
@@ -11,10 +13,23 @@ void run(const std::string& program)
     auto tokens = scanner.scanTokens();
 
     // Only output tokens if no error
-    if (tokens) {
-        for (auto& token: tokens.value()) {
-            std::cout << token << std::endl;
-        }
+    if (!tokens) {
+        return;
+    }
+
+    for (auto& token: tokens.value()) {
+        std::cout << *token << std::endl;
+    }
+
+    Parser parser{tokens.value()};
+
+    auto ast = parser.parse();
+
+    if (ast) {
+        AstPrinter ast_printer;
+        ast->accept(ast_printer);
+
+        std::cout << ast_printer.result_.str() << std::endl;
     }
 }
 
