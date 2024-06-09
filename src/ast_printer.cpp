@@ -1,16 +1,16 @@
 #include "ast_printer.hpp"
 
-void AstPrinter::visitBinaryExpr(BinaryExpr &exp)
+void AstPrinter::visitBinaryExpr(BinaryExpr& expr)
 {
     std::ostringstream tempResult;
 
-    tempResult << "(" << exp.op_->lexeme_ << " ";
+    tempResult << "(" << expr.op_->lexeme_ << " ";
     
-    exp.left_->accept(*this);
+    expr.left_->accept(*this);
 
     tempResult << result_.str() << " ";
 
-    exp.right_->accept(*this);
+    expr.right_->accept(*this);
 
     tempResult << result_.str() << ")";
 

@@ -8,7 +8,7 @@ struct AstPrinter: public AbstractVisitor
 {
     std::ostringstream result_;
 
-    void visitBinaryExpr(BinaryExpr &exp) override;
+    void visitBinaryExpr(BinaryExpr& expr) override;
     void visitGroupingExpr(GroupingExpr& expr) override;
     void visitLiteralExpr(LiteralExpr& expr) override;
     void visitUnaryExpr(UnaryExpr& expr) override;

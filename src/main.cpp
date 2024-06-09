@@ -5,6 +5,7 @@
 #include "scanner.hpp"
 #include "parser.hpp"
 #include "ast_printer.hpp"
+#include "interpreter.hpp"
 
 void run(const std::string& program)
 {
@@ -30,6 +31,9 @@ void run(const std::string& program)
         ast->accept(ast_printer);
 
         std::cout << ast_printer.result_.str() << std::endl;
+
+        Interpreter interpreter;
+        interpreter.interpret(ast);
     }
 }
 

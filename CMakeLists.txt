@@ -35,6 +35,7 @@ add_executable(cpplox
     src/value.cpp
     src/ast_printer.cpp
     src/parser.cpp
+    src/interpreter.cpp
     "${generated_dir}/expr.hpp"
 )
 

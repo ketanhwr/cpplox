@@ -44,7 +44,11 @@ LoxBool::LoxBool(bool value)
 
 std::ostream& LoxBool::operator<<(std::ostream& o)
 {
-    o << value_;
+    if (value_) {
+        o << "true";
+    } else {
+        o << "false";
+    }
     return o;
 }
 
