@@ -78,7 +78,7 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
             } else if (isString(left) && isString(right)) {
                 result_ = std::make_shared<LoxString>(CAST(LoxString, left)->value_ + CAST(LoxString, right)->value_);
             } else {
-                throw new interpreter_error{expr.op_, "Operands must be both strings or numbers."};
+                throw interpreter_error{expr.op_, "Operands must be both strings or numbers."};
             }
 
             break;
@@ -304,13 +304,13 @@ double Interpreter::getFloat(LoxValuePtr value)
 void Interpreter::checkNumberOp(std::shared_ptr<Token> op, LoxValuePtr value)
 {
     if (isNum(value)) return;
-    throw new interpreter_error{op, "Operand must be a number."};
+    throw interpreter_error{op, "Operand must be a number."};
 }
 
 void Interpreter::checkNumberOps(std::shared_ptr<Token> op, LoxValuePtr left, LoxValuePtr right)
 {
     if (isNum(left) && isNum(right)) return;
-    throw new interpreter_error{op, "Operands must be numbers."};
+    throw interpreter_error{op, "Operands must be numbers."};
 }
 
 LoxValuePtr Interpreter::evaluate(std::shared_ptr<Expr> expr)
