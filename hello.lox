@@ -1,12 +1,12 @@
-print "Hello, World!"
+print "Hello, World!";
 
 // Single line comment
-var a = 10
-a = a + 5.5   // comment after statement
+var a = 10;
+a = a + 5.5;   // comment after statement
 
 /*
     Multiline
     comment
 */
 
-print a
+print a;
