@@ -31,8 +31,8 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     void visitUnaryExpr(UnaryExpr& expr) override;
 
     // Visitor methods for Statements
-	void visitExpressionStmt(ExpressionStmt& stmt) override;
-	void visitPrintStmt(PrintStmt& stmt) override;
+    void visitExpressionStmt(ExpressionStmt& stmt) override;
+    void visitPrintStmt(PrintStmt& stmt) override;
 
     // Helpers
     bool isTruthy(LoxValuePtr value);
