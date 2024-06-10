@@ -18,7 +18,7 @@ set(generated_dir ${PROJECT_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY "${generated_dir}")
 
 add_custom_command(
-    OUTPUT "${generated_dir}/expr.hpp"
+    OUTPUT "${generated_dir}/expr.hpp" "${generated_dir}/stmt.hpp"
     COMMAND "${Python_EXECUTABLE}"
         "${PROJECT_SOURCE_DIR}/tools/generate_ast.py"
         "${generated_dir}"
@@ -37,6 +37,7 @@ add_executable(cpplox
     src/parser.cpp
     src/interpreter.cpp
     "${generated_dir}/expr.hpp"
+    "${generated_dir}/stmt.hpp"
 )
 
 target_include_directories(cpplox PUBLIC

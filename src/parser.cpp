@@ -151,12 +151,46 @@ std::shared_ptr<Expr> Parser::parsePrimary()
     throw error(peek(), "Expected expression");
 }
 
-std::shared_ptr<Expr> Parser::parse()
+std::shared_ptr<Stmt> Parser::parsePrintStmt()
 {
-    try {
-        return parseExpression();
-    } catch (parsing_error& error) {
-        return nullptr;
+    auto exp = parseExpression();
+
+    consume(TokenType::SEMICOLON, "Expected ';' after value");
+
+    return std::make_shared<PrintStmt>(exp);
+}
+
+std::shared_ptr<Stmt> Parser::parseExpressionStmt()
+{
+    auto exp = parseExpression();
+
+    consume(TokenType::SEMICOLON, "Expected ';' after expression");
+
+    return std::make_shared<ExpressionStmt>(exp);
+}
+
+std::shared_ptr<Stmt> Parser::parseStatement()
+{
+    if (match(TokenType::PRINT)) {
+        return parsePrintStmt();
     }
+
+    return parseExpressionStmt();
+}
+
+std::optional<std::vector<std::shared_ptr<Stmt>>> Parser::parse()
+{
+    // try {
+    //     return parseExpression();
+    // } catch (parsing_error& error) {
+    //     return nullptr;
+    // }
+    //
+    std::vector<std::shared_ptr<Stmt>> statements;
+    while (!atEnd()) {
+        statements.push_back(parseStatement());
+    }
+
+    return statements;
 }
 

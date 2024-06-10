@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-struct AstPrinter: public AbstractVisitor
+struct AstPrinter: public Expr::AbstractVisitor
 {
     std::ostringstream result_;
 

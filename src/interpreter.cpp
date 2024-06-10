@@ -207,6 +207,18 @@ void Interpreter::visitUnaryExpr(UnaryExpr& expr)
     }
 }
 
+void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
+{
+    evaluate(stmt.expression_);
+}
+
+void Interpreter::visitPrintStmt(PrintStmt& stmt)
+{
+    auto value = evaluate(stmt.expression_);
+
+    std::cout << *value << std::endl;
+}
+
 bool Interpreter::isTruthy(LoxValuePtr value)
 {
     if (auto boolVal = std::dynamic_pointer_cast<LoxBool>(value)) {
@@ -319,11 +331,17 @@ LoxValuePtr Interpreter::evaluate(std::shared_ptr<Expr> expr)
     return result_;
 }
 
-void Interpreter::interpret(std::shared_ptr<Expr> expr)
+void Interpreter::execute(std::shared_ptr<Stmt> stmt)
+{
+    stmt->accept(*this);
+}
+
+void Interpreter::interpret(const std::vector<std::shared_ptr<Stmt>>& statements)
 {
     try {
-        evaluate(expr);
-        std::cout << "Output: " << *result_ << std::endl;
+        for (auto statement: statements) {
+            execute(statement);
+        }
     } catch (interpreter_error& error) {
         std::cerr << "Line [" << error.token_->line_ << "]: " << error.what() << std::endl;
     }

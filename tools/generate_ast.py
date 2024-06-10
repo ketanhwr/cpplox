@@ -2,32 +2,31 @@
 
 import sys
 
-def define_ast(output_dir, base_class, ast_types):
+def define_ast(output_dir, base_class, ast_types, dependencies = []):
     with open(file=f"{output_dir}/{str.lower(base_class)}.hpp", mode="w") as output_file:
         output_file.write("#pragma once\n\n")
-        output_file.write("#include \"token.hpp\"\n\n")
 
-        # Forward declare AbstractVisitor
-        output_file.write("struct AbstractVisitor;\n\n")
-
-        output_file.write(f"struct {base_class}\n")
-        output_file.write("{\n")
-        output_file.write("\tvirtual void accept(AbstractVisitor& visitor) = 0;\n")
-        output_file.write(f"\tvirtual ~{base_class}() = default;\n")
-        output_file.write("};\n\n")
+        for dependecy in dependencies:
+            output_file.write(f"#include \"{dependecy}\"\n\n")
 
         for k in ast_types:
             output_file.write(f"struct {k}{base_class};\n");
-
         output_file.write("\n");
 
-        # AbstractVisitor structure
-        output_file.write("struct AbstractVisitor\n")
+        output_file.write(f"struct {base_class}\n")
         output_file.write("{\n")
 
-        for k in ast_types:
-            output_file.write(f"\tvirtual void visit{k}{base_class}({k}{base_class}& {str.lower(base_class)}) = 0;\n")
+        # AbstractVisitor structure
+        output_file.write("\tstruct AbstractVisitor\n")
+        output_file.write("\t{\n")
 
+        for k in ast_types:
+            output_file.write(f"\t\tvirtual void visit{k}{base_class}({k}{base_class}& {str.lower(base_class)}) = 0;\n")
+
+        output_file.write("\t};\n\n")
+
+        output_file.write("\tvirtual void accept(AbstractVisitor& visitor) = 0;\n")
+        output_file.write(f"\tvirtual ~{base_class}() = default;\n")
         output_file.write("};\n\n")
 
         for k, v in ast_types.items():
@@ -66,7 +65,12 @@ def main():
         "Grouping": "Expr expression",
         "Literal": "LoxValue value",
         "Unary": "Token op | Expr right"
-    })
+    }, [ "token.hpp" ])
+
+    define_ast(sys.argv[1], "Stmt", {
+        "Expression": "Expr expression",
+        "Print": "Expr expression"
+    }, [ "expr.hpp" ])
 
 if __name__ == "__main__":
     main()

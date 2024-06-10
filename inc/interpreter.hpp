@@ -1,10 +1,13 @@
 #pragma once
 
 #include "expr.hpp"
+#include "stmt.hpp"
+
+#include <vector>
 
 using LoxValuePtr = std::shared_ptr<LoxValue>;
 
-struct Interpreter: public AbstractVisitor
+struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
 {
     struct interpreter_error: public std::runtime_error
     {
@@ -18,11 +21,15 @@ struct Interpreter: public AbstractVisitor
 
     LoxValuePtr result_;
 
-    // Visitor methods
+    // Visitor methods for Expressions
     void visitBinaryExpr(BinaryExpr& expr) override;
     void visitGroupingExpr(GroupingExpr& expr) override;
     void visitLiteralExpr(LiteralExpr& expr) override;
     void visitUnaryExpr(UnaryExpr& expr) override;
+
+    // Visitor methods for Statements
+	void visitExpressionStmt(ExpressionStmt& stmt) override;
+	void visitPrintStmt(PrintStmt& stmt) override;
 
     // Helpers
     bool isTruthy(LoxValuePtr value);
@@ -41,7 +48,8 @@ struct Interpreter: public AbstractVisitor
     void checkNumberOps(std::shared_ptr<Token> op, LoxValuePtr left, LoxValuePtr right);
 
     LoxValuePtr evaluate(std::shared_ptr<Expr> expr);
+    void execute(std::shared_ptr<Stmt> stmt);
 
-    void interpret(std::shared_ptr<Expr>);
+    void interpret(const std::vector<std::shared_ptr<Stmt>>& statements);
 };
 

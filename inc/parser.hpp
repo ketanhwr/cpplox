@@ -2,7 +2,9 @@
 
 #include "expr.hpp"
 #include "token.hpp"
+#include "stmt.hpp"
 
+#include <optional>
 #include <vector>
 
 class Parser
@@ -50,9 +52,13 @@ class Parser
     std::shared_ptr<Expr> parseFactor();
     std::shared_ptr<Expr> parseUnary();
     std::shared_ptr<Expr> parsePrimary();
+
+    std::shared_ptr<Stmt> parsePrintStmt();
+    std::shared_ptr<Stmt> parseExpressionStmt();
+    std::shared_ptr<Stmt> parseStatement();
 public:
     Parser(const std::vector<std::shared_ptr<Token>>& tokens);
 
-    std::shared_ptr<Expr> parse();
+    std::optional<std::vector<std::shared_ptr<Stmt>>> parse();
 };
 
