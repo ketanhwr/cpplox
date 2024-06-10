@@ -6,7 +6,7 @@
 #include "parser.hpp"
 #include "interpreter.hpp"
 
-void run(const std::string& program)
+void run(const std::string& program, bool repl_mode = false)
 {
     Scanner scanner{program};
 
@@ -30,7 +30,7 @@ void run(const std::string& program)
 
         // std::cout << ast_printer.result_.str() << std::endl;
 
-        Interpreter interpreter;
+        Interpreter interpreter{repl_mode};
         interpreter.interpret(ast.value());
     }
 }
@@ -57,7 +57,7 @@ void runFromFile(const char *file)
 {
     std::string fileContents{readFromFile(file)};
 
-    std::cout << "File contents: \n" << fileContents << std::endl;
+    // std::cout << "File contents: \n" << fileContents << std::endl;
 
     run(fileContents);
 }
@@ -70,9 +70,9 @@ void runFromPrompt()
 
     std::cout << "lox> ";
     while (std::getline(std::cin, line)) {
-        std::cout << "You entered [" << line.size() << "] characters: " << line << std::endl;
+        // std::cout << "You entered [" << line.size() << "] characters: " << line << std::endl;
 
-        run(line);
+        run(line, true);
 
         std::cout << "lox> ";
     }

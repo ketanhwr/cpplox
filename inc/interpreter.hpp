@@ -19,6 +19,9 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
         {}
     };
 
+    Interpreter(bool repl_mode = false) : repl_mode_{repl_mode} {}
+
+    bool repl_mode_;
     LoxValuePtr result_;
 
     // Visitor methods for Expressions

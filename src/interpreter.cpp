@@ -210,6 +210,10 @@ void Interpreter::visitUnaryExpr(UnaryExpr& expr)
 void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
 {
     evaluate(stmt.expression_);
+
+    if (repl_mode_) {
+        std::cout << *result_ << std::endl;
+    }
 }
 
 void Interpreter::visitPrintStmt(PrintStmt& stmt)
