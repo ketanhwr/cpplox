@@ -24,6 +24,7 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     void visitVariableExpr(VariableExpr& expr) override;
 
     // Visitor methods for Statements
+    void visitWhileStmt(WhileStmt& stmt) override;
     void visitIfStmt(IfStmt& stmt) override;
     void visitBlockStmt(BlockStmt& stmt) override;
     void visitExpressionStmt(ExpressionStmt& stmt) override;

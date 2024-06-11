@@ -173,7 +173,20 @@ std::shared_ptr<Expr> Parser::parsePrimary()
     throw error(peek(), "Expected expression");
 }
 
-std::shared_ptr<Stmt> Parser::parseIfDeclaration()
+std::shared_ptr<Stmt> Parser::parseWhileStmt()
+{
+    consume(TokenType::LEFT_PAREN, "Expected '(' after while");
+
+    auto cond = parseExpression();
+
+    consume(TokenType::RIGHT_PAREN, "Expected ')' after condition");
+
+    auto whileBlock = parseStatement();
+
+    return std::make_shared<WhileStmt>(cond, whileBlock);
+}
+
+std::shared_ptr<Stmt> Parser::parseIfStmt()
 {
     consume(TokenType::LEFT_PAREN, "Expected '(' after if");
 
@@ -231,7 +244,10 @@ std::shared_ptr<Stmt> Parser::parseStatement()
         return parseBlock();
     }
     if (match(TokenType::IF)) {
-        return parseIfDeclaration();
+        return parseIfStmt();
+    }
+    if (match(TokenType::WHILE)) {
+        return parseWhileStmt();
     }
 
     return parseExpressionStmt();

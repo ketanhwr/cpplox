@@ -226,15 +226,26 @@ void Interpreter::visitVariableExpr(VariableExpr& expr)
     result_ = env_->get(expr.name_);
 }
 
+void Interpreter::visitWhileStmt(WhileStmt& stmt)
+{
+    auto result = evaluate(stmt.condition_);
+
+    while (isTruthy(result)) {
+        execute(stmt.statements_);
+
+        result = evaluate(stmt.condition_);
+    }
+}
+
 void Interpreter::visitIfStmt(IfStmt& stmt)
 {
-    result_ = evaluate(stmt.condition_);
+    auto result = evaluate(stmt.condition_);
 
-    if (isTruthy(result_)) {
-        stmt.thenStmt_->accept(*this);
+    if (isTruthy(result)) {
+        execute(stmt.thenStmt_);
     } else {
         if (stmt.elseStmt_) {
-            stmt.elseStmt_->accept(*this);
+            execute(stmt.elseStmt_);
         }
     }
 }
@@ -252,10 +263,6 @@ void Interpreter::visitBlockStmt(BlockStmt& stmt)
 void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
 {
     evaluate(stmt.expression_);
-
-    if (repl_mode_) {
-        std::cout << *result_ << std::endl;
-    }
 }
 
 void Interpreter::visitPrintStmt(PrintStmt& stmt)
@@ -275,10 +282,6 @@ void Interpreter::visitVarStmt(VarStmt& stmt)
     }
 
     env_->define(stmt.name_->lexeme_, initVal);
-
-    if (repl_mode_) {
-        std::cout << *initVal << std::endl;
-    }
 }
 
 bool Interpreter::isTruthy(LoxValuePtr value)
@@ -396,6 +399,10 @@ LoxValuePtr Interpreter::evaluate(std::shared_ptr<Expr> expr)
 void Interpreter::execute(std::shared_ptr<Stmt> stmt)
 {
     stmt->accept(*this);
+
+    if (repl_mode_) {
+        std::cout << *result_ << std::endl;
+    }
 }
 
 void Interpreter::executeBlock(const std::vector<std::shared_ptr<Stmt>>& statements)

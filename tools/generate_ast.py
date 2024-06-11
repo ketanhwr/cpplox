@@ -72,6 +72,7 @@ def main():
     }, [ "token.hpp" ])
 
     define_ast(sys.argv[1], "Stmt", {
+        "While": "Expr condition | Stmt statements",
         "If": "Expr condition | Stmt thenStmt | Stmt elseStmt",
         "Block": "std::vector<std::shared_ptr<Stmt>> statements",
         "Expression": "Expr expression",

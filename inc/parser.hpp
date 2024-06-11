@@ -49,7 +49,8 @@ class Parser
     std::shared_ptr<Expr> parseUnary();
     std::shared_ptr<Expr> parsePrimary();
 
-    std::shared_ptr<Stmt> parseIfDeclaration();
+    std::shared_ptr<Stmt> parseWhileStmt();
+    std::shared_ptr<Stmt> parseIfStmt();
     std::shared_ptr<Stmt> parseBlock();
     std::shared_ptr<Stmt> parsePrintStmt();
     std::shared_ptr<Stmt> parseExpressionStmt();
