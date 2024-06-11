@@ -36,6 +36,7 @@ add_executable(cpplox
     src/ast_printer.cpp
     src/parser.cpp
     src/interpreter.cpp
+    src/environment.cpp
     "${generated_dir}/expr.hpp"
     "${generated_dir}/stmt.hpp"
 )

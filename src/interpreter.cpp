@@ -1,5 +1,7 @@
 #include "interpreter.hpp"
 
+#include "lox_exception.hpp"
+
 #include <iostream>
 #include <cmath>
 
@@ -207,6 +209,11 @@ void Interpreter::visitUnaryExpr(UnaryExpr& expr)
     }
 }
 
+void Interpreter::visitVariableExpr(VariableExpr& expr)
+{
+    result_ = env_.get(expr.name_);
+}
+
 void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
 {
     evaluate(stmt.expression_);
@@ -221,6 +228,22 @@ void Interpreter::visitPrintStmt(PrintStmt& stmt)
     auto value = evaluate(stmt.expression_);
 
     std::cout << *value << std::endl;
+}
+
+void Interpreter::visitVarStmt(VarStmt& stmt)
+{
+    LoxValuePtr initVal;
+    if (stmt.initializer_) {
+        initVal = evaluate(stmt.initializer_);
+    } else {
+        initVal = std::make_shared<LoxNil>();
+    }
+
+    env_.define(stmt.name_->lexeme_, initVal);
+
+    if (repl_mode_) {
+        std::cout << *initVal << std::endl;
+    }
 }
 
 bool Interpreter::isTruthy(LoxValuePtr value)

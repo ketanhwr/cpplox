@@ -2,37 +2,30 @@
 
 #include "expr.hpp"
 #include "stmt.hpp"
+#include "environment.hpp"
 
 #include <vector>
 
-using LoxValuePtr = std::shared_ptr<LoxValue>;
-
 struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
 {
-    struct interpreter_error: public std::runtime_error
-    {
-        std::shared_ptr<Token> token_;
-
-        interpreter_error(std::shared_ptr<Token> token, const std::string& msg)
-            : token_{token}
-            , std::runtime_error{msg}
-        {}
-    };
-
     Interpreter(bool repl_mode = false) : repl_mode_{repl_mode} {}
 
     bool repl_mode_;
     LoxValuePtr result_;
+
+    Environment env_;
 
     // Visitor methods for Expressions
     void visitBinaryExpr(BinaryExpr& expr) override;
     void visitGroupingExpr(GroupingExpr& expr) override;
     void visitLiteralExpr(LiteralExpr& expr) override;
     void visitUnaryExpr(UnaryExpr& expr) override;
+	void visitVariableExpr(VariableExpr& expr) override;
 
     // Visitor methods for Statements
     void visitExpressionStmt(ExpressionStmt& stmt) override;
     void visitPrintStmt(PrintStmt& stmt) override;
+    void visitVarStmt(VarStmt& stmt) override;
 
     // Helpers
     bool isTruthy(LoxValuePtr value);

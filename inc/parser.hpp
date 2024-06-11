@@ -3,19 +3,13 @@
 #include "expr.hpp"
 #include "token.hpp"
 #include "stmt.hpp"
+#include "lox_exception.hpp"
 
 #include <optional>
 #include <vector>
 
 class Parser
 {
-    struct parsing_error: public std::runtime_error
-    {
-        parsing_error(const std::string& what)
-            : std::runtime_error{what}
-        {}
-    };
-
     const std::vector<std::shared_ptr<Token>>& tokens_;
     size_t current_{0};
     bool parsing_failed_{false};

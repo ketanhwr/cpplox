@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 struct LoxValue
 {
@@ -9,6 +10,8 @@ struct LoxValue
     virtual std::ostream& operator<<(std::ostream& o) = 0;
     virtual ~LoxValue() = default;
 };
+
+using LoxValuePtr = std::shared_ptr<LoxValue>;
 
 struct LoxString: public LoxValue
 {
