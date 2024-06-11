@@ -148,6 +148,10 @@ std::shared_ptr<Expr> Parser::parsePrimary()
         return std::make_shared<GroupingExpr>(exp);
     }
 
+    if (match(TokenType::IDENTIFIER)) {
+        return std::make_shared<VariableExpr>(previous());
+    }
+
     throw error(peek(), "Expected expression");
 }
 
@@ -178,18 +182,71 @@ std::shared_ptr<Stmt> Parser::parseStatement()
     return parseExpressionStmt();
 }
 
+std::shared_ptr<Stmt> Parser::parseVarDeclaration()
+{
+    auto ident = consume(TokenType::IDENTIFIER, "Expected variable name.");
+
+    std::shared_ptr<Expr> init = nullptr;
+
+    if (match(TokenType::EQUAL)) {
+        init = parseExpression();
+    }
+
+    consume(TokenType::SEMICOLON, "Expected ';' after variable declaration");
+
+    return std::make_shared<VarStmt>(ident, init);
+}
+
+std::shared_ptr<Stmt> Parser::parseDeclaration()
+{
+    try {
+        if (match(TokenType::VAR)) {
+            return parseVarDeclaration();
+        }
+        return parseStatement();
+
+    } catch (parsing_error& error) {
+        parsing_failed_ = true;
+
+        synchronize();
+
+        return nullptr;
+    }
+}
+
+void Parser::synchronize()
+{
+    advance();
+
+    while (!atEnd()) {
+        if (previous()->tokenType_ == TokenType::SEMICOLON) return;
+
+        switch (peek()->tokenType_) {
+            case TokenType::CLASS:
+            case TokenType::FUN:
+            case TokenType::VAR:
+            case TokenType::FOR:
+            case TokenType::IF:
+            case TokenType::WHILE:
+            case TokenType::PRINT:
+            case TokenType::RETURN:
+                return;
+            default:
+                break;
+        }
+
+        advance();
+    }
+}
+
 std::optional<std::vector<std::shared_ptr<Stmt>>> Parser::parse()
 {
-    // try {
-    //     return parseExpression();
-    // } catch (parsing_error& error) {
-    //     return nullptr;
-    // }
-    //
     std::vector<std::shared_ptr<Stmt>> statements;
     while (!atEnd()) {
-        statements.push_back(parseStatement());
+        statements.push_back(parseDeclaration());
     }
+
+    if (parsing_failed_) return std::nullopt;
 
     return statements;
 }

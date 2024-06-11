@@ -18,6 +18,7 @@ class Parser
 
     const std::vector<std::shared_ptr<Token>>& tokens_;
     size_t current_{0};
+    bool parsing_failed_{false};
 
     parsing_error error(std::shared_ptr<Token> token, const std::string& msg);
 
@@ -56,6 +57,10 @@ class Parser
     std::shared_ptr<Stmt> parsePrintStmt();
     std::shared_ptr<Stmt> parseExpressionStmt();
     std::shared_ptr<Stmt> parseStatement();
+    std::shared_ptr<Stmt> parseVarDeclaration();
+    std::shared_ptr<Stmt> parseDeclaration();
+
+    void synchronize();
 public:
     Parser(const std::vector<std::shared_ptr<Token>>& tokens);
 

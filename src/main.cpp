@@ -16,20 +16,11 @@ void run(const std::string& program, bool repl_mode = false)
         return;
     }
 
-    // for (auto& token: tokens.value()) {
-    //     std::cout << *token << std::endl;
-    // }
-
     Parser parser{tokens.value()};
 
     auto ast = parser.parse();
 
     if (ast) {
-        // AstPrinter ast_printer;
-        // ast->accept(ast_printer);
-
-        // std::cout << ast_printer.result_.str() << std::endl;
-
         Interpreter interpreter{repl_mode};
         interpreter.interpret(ast.value());
     }
@@ -57,8 +48,6 @@ void runFromFile(const char *file)
 {
     std::string fileContents{readFromFile(file)};
 
-    // std::cout << "File contents: \n" << fileContents << std::endl;
-
     run(fileContents);
 }
 
@@ -70,8 +59,6 @@ void runFromPrompt()
 
     std::cout << "lox> ";
     while (std::getline(std::cin, line)) {
-        // std::cout << "You entered [" << line.size() << "] characters: " << line << std::endl;
-
         run(line, true);
 
         std::cout << "lox> ";

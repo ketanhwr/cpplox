@@ -64,12 +64,14 @@ def main():
         "Binary": "Expr left | Token op | Expr right",
         "Grouping": "Expr expression",
         "Literal": "LoxValue value",
-        "Unary": "Token op | Expr right"
+        "Unary": "Token op | Expr right",
+        "Variable": "Token name"
     }, [ "token.hpp" ])
 
     define_ast(sys.argv[1], "Stmt", {
         "Expression": "Expr expression",
-        "Print": "Expr expression"
+        "Print": "Expr expression",
+        "Var": "Token name | Expr initializer"
     }, [ "expr.hpp" ])
 
 if __name__ == "__main__":
