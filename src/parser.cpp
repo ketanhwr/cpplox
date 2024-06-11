@@ -173,6 +173,24 @@ std::shared_ptr<Expr> Parser::parsePrimary()
     throw error(peek(), "Expected expression");
 }
 
+std::shared_ptr<Stmt> Parser::parseIfDeclaration()
+{
+    consume(TokenType::LEFT_PAREN, "Expected '(' after if");
+
+    auto cond = parseExpression();
+    
+    consume(TokenType::RIGHT_PAREN, "Expected ')' after condition");
+
+    auto thenBlock = parseStatement();
+
+    std::shared_ptr<Stmt> elseBlock;
+    if (match(TokenType::ELSE)) {
+        elseBlock = parseStatement();
+    }
+
+    return std::make_shared<IfStmt>(cond, thenBlock, elseBlock);
+}
+
 std::shared_ptr<Stmt> Parser::parseBlock()
 {
     auto statements = std::make_shared<std::vector<std::shared_ptr<Stmt>>>();
@@ -211,6 +229,9 @@ std::shared_ptr<Stmt> Parser::parseStatement()
     }
     if (match(TokenType::LEFT_BRACE)) {
         return parseBlock();
+    }
+    if (match(TokenType::IF)) {
+        return parseIfDeclaration();
     }
 
     return parseExpressionStmt();

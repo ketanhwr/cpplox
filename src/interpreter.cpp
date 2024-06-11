@@ -226,6 +226,19 @@ void Interpreter::visitVariableExpr(VariableExpr& expr)
     result_ = env_->get(expr.name_);
 }
 
+void Interpreter::visitIfStmt(IfStmt& stmt)
+{
+    result_ = evaluate(stmt.condition_);
+
+    if (isTruthy(result_)) {
+        stmt.thenStmt_->accept(*this);
+    } else {
+        if (stmt.elseStmt_) {
+            stmt.elseStmt_->accept(*this);
+        }
+    }
+}
+
 void Interpreter::visitBlockStmt(BlockStmt& stmt)
 {
     auto currentEnv = env_;
