@@ -44,13 +44,13 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     double getFloat(LoxValuePtr value);
 
     // Checkers
-    void checkNumberOp(std::shared_ptr<Token> op, LoxValuePtr value);
-    void checkNumberOps(std::shared_ptr<Token> op, LoxValuePtr left, LoxValuePtr right);
+    void checkNumberOp(TokenPtr op, LoxValuePtr value);
+    void checkNumberOps(TokenPtr op, LoxValuePtr left, LoxValuePtr right);
 
-    LoxValuePtr evaluate(std::shared_ptr<Expr> expr);
-    void execute(std::shared_ptr<Stmt> stmt);
-    void executeBlock(const std::vector<std::shared_ptr<Stmt>>& statements);
+    LoxValuePtr evaluate(ExprPtr expr);
+    void execute(StmtPtr stmt);
+    void executeBlock(const std::vector<StmtPtr>& statements);
 
-    void interpret(const std::vector<std::shared_ptr<Stmt>>& statements);
+    void interpret(const std::vector<StmtPtr>& statements);
 };
 

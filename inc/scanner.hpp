@@ -9,7 +9,7 @@
 class Scanner
 {
     const std::string& program_;
-    std::vector<std::shared_ptr<Token>> tokens_;
+    std::vector<TokenPtr> tokens_;
 
     bool hasError_{false};
 
@@ -28,7 +28,7 @@ class Scanner
     
     void addToken(TokenType tokenType);
 
-    void addToken(TokenType tokenType, std::shared_ptr<LoxValue> value)
+    void addToken(TokenType tokenType, LoxValuePtr value)
     {
         std::string lexeme = program_.substr(start_, current_ - start_);
         tokens_.push_back(std::make_shared<Token>(tokenType, value, lexeme, line_));
@@ -45,6 +45,6 @@ class Scanner
 public:
     Scanner(const std::string& program);
 
-    std::optional<std::vector<std::shared_ptr<Token>>> scanTokens();
+    std::optional<std::vector<TokenPtr>> scanTokens();
 };
 

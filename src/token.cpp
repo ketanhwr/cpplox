@@ -48,7 +48,7 @@ const char* getTokenTypeStr(TokenType tokenType)
     }
 }
 
-Token::Token(TokenType tokenType, std::shared_ptr<LoxValue> value, std::string lexeme, size_t line)
+Token::Token(TokenType tokenType, LoxValuePtr value, std::string lexeme, size_t line)
     : tokenType_{tokenType}
     , value_{value}
     , lexeme_{lexeme}

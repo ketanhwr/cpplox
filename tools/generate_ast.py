@@ -31,6 +31,8 @@ def define_ast(output_dir, base_class, ast_types, dependencies = []):
         output_file.write(f"\tvirtual ~{base_class}() = default;\n")
         output_file.write("};\n\n")
 
+        output_file.write(f"using {base_class}Ptr = std::shared_ptr<{base_class}>;\n\n")
+
         for k, v in ast_types.items():
             attrs = [[x.strip().split()[0].strip(), x.strip().split()[1].strip()] for x in v.split('|') ]
 
@@ -68,7 +70,8 @@ def main():
         "Grouping": "Expr expression",
         "Literal": "LoxValue value",
         "Unary": "Token op | Expr right",
-        "Variable": "Token name"
+        "Variable": "Token name",
+        # "Logical": "Expr left | Token op | Expr right"
     }, [ "token.hpp" ])
 
     define_ast(sys.argv[1], "Stmt", {

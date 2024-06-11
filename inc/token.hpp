@@ -24,12 +24,13 @@ enum class TokenType
 
 struct Token {
     TokenType tokenType_;
-    std::shared_ptr<LoxValue> value_;
+    LoxValuePtr value_;
     std::string lexeme_;
     size_t line_;
 
-    Token(TokenType tokenType, std::shared_ptr<LoxValue> value, std::string lexeme, size_t line);
+    Token(TokenType tokenType, LoxValuePtr value, std::string lexeme, size_t line);
 
     friend std::ostream& operator<<(std::ostream& out, Token& token);
 };
 
+using TokenPtr = std::shared_ptr<Token>;

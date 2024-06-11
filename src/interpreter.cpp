@@ -228,25 +228,17 @@ void Interpreter::visitVariableExpr(VariableExpr& expr)
 
 void Interpreter::visitWhileStmt(WhileStmt& stmt)
 {
-    auto result = evaluate(stmt.condition_);
-
-    while (isTruthy(result)) {
+    while (isTruthy(evaluate(stmt.condition_))) {
         execute(stmt.statements_);
-
-        result = evaluate(stmt.condition_);
     }
 }
 
 void Interpreter::visitIfStmt(IfStmt& stmt)
 {
-    auto result = evaluate(stmt.condition_);
-
-    if (isTruthy(result)) {
+    if (isTruthy(evaluate(stmt.condition_))) {
         execute(stmt.thenStmt_);
-    } else {
-        if (stmt.elseStmt_) {
-            execute(stmt.elseStmt_);
-        }
+    } else if (stmt.elseStmt_) {
+        execute(stmt.elseStmt_);
     }
 }
 
@@ -378,25 +370,25 @@ double Interpreter::getFloat(LoxValuePtr value)
     return CAST(LoxInteger, value)->value_;
 }
 
-void Interpreter::checkNumberOp(std::shared_ptr<Token> op, LoxValuePtr value)
+void Interpreter::checkNumberOp(TokenPtr op, LoxValuePtr value)
 {
     if (isNum(value)) return;
     throw interpreter_error{op, "Operand must be a number."};
 }
 
-void Interpreter::checkNumberOps(std::shared_ptr<Token> op, LoxValuePtr left, LoxValuePtr right)
+void Interpreter::checkNumberOps(TokenPtr op, LoxValuePtr left, LoxValuePtr right)
 {
     if (isNum(left) && isNum(right)) return;
     throw interpreter_error{op, "Operands must be numbers."};
 }
 
-LoxValuePtr Interpreter::evaluate(std::shared_ptr<Expr> expr)
+LoxValuePtr Interpreter::evaluate(ExprPtr expr)
 {
     expr->accept(*this);
     return result_;
 }
 
-void Interpreter::execute(std::shared_ptr<Stmt> stmt)
+void Interpreter::execute(StmtPtr stmt)
 {
     stmt->accept(*this);
 
@@ -405,14 +397,14 @@ void Interpreter::execute(std::shared_ptr<Stmt> stmt)
     }
 }
 
-void Interpreter::executeBlock(const std::vector<std::shared_ptr<Stmt>>& statements)
+void Interpreter::executeBlock(const std::vector<StmtPtr>& statements)
 {
     for (auto stmt: statements) {
         stmt->accept(*this);
     }
 }
 
-void Interpreter::interpret(const std::vector<std::shared_ptr<Stmt>>& statements)
+void Interpreter::interpret(const std::vector<StmtPtr>& statements)
 {
     try {
         for (auto statement: statements) {

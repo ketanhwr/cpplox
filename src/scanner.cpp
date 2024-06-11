@@ -148,7 +148,7 @@ bool Scanner::isAlphaNum(char c)
     return isAlpha(c) || isNum(c);
 }
 
-std::optional<std::vector<std::shared_ptr<Token>>> Scanner::scanTokens()
+std::optional<std::vector<TokenPtr>> Scanner::scanTokens()
 {
     while (!atEnd()) {
         start_ = current_;

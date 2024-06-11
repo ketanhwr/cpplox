@@ -13,9 +13,9 @@ struct Environment
 
     void define(const std::string& name, LoxValuePtr value);
 
-    LoxValuePtr get(std::shared_ptr<Token> token);
+    LoxValuePtr get(TokenPtr token);
 
-    void assign(std::shared_ptr<Token> token, LoxValuePtr value);
+    void assign(TokenPtr token, LoxValuePtr value);
 
 private:
     std::unordered_map<std::string, LoxValuePtr> values_;

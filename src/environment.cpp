@@ -11,7 +11,7 @@ void Environment::define(const std::string& name, LoxValuePtr value)
     values_.insert({name, value});
 }
 
-LoxValuePtr Environment::get(std::shared_ptr<Token> token)
+LoxValuePtr Environment::get(TokenPtr token)
 {
     auto it = values_.find(token->lexeme_);
 
@@ -30,7 +30,7 @@ LoxValuePtr Environment::get(std::shared_ptr<Token> token)
     throw interpreter_error{token, std::move(errorMsg_)};
 }
 
-void Environment::assign(std::shared_ptr<Token> token, LoxValuePtr value)
+void Environment::assign(TokenPtr token, LoxValuePtr value)
 {
     auto it = values_.find(token->lexeme_);
 

@@ -6,9 +6,9 @@
 
 struct interpreter_error: public std::runtime_error
 {
-    std::shared_ptr<Token> token_;
+    TokenPtr token_;
 
-    interpreter_error(std::shared_ptr<Token> token, const std::string& msg)
+    interpreter_error(TokenPtr token, const std::string& msg)
         : token_{token}
         , std::runtime_error{msg}
     {}

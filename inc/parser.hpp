@@ -10,19 +10,19 @@
 
 class Parser
 {
-    const std::vector<std::shared_ptr<Token>>& tokens_;
+    const std::vector<TokenPtr>& tokens_;
     size_t current_{0};
     bool parsing_failed_{false};
 
-    parsing_error error(std::shared_ptr<Token> token, const std::string& msg);
+    parsing_error error(TokenPtr token, const std::string& msg);
 
     // Helpers
-    std::shared_ptr<Token> peek();
-    std::shared_ptr<Token> previous();
-    std::shared_ptr<Token> advance();
+    TokenPtr peek();
+    TokenPtr previous();
+    TokenPtr advance();
     bool atEnd();
     bool check(TokenType tokenType);
-    std::shared_ptr<Token> consume(TokenType tokenType, const std::string& msg);
+    TokenPtr consume(TokenType tokenType, const std::string& msg);
 
     bool match(TokenType tokenType)
     {
@@ -40,28 +40,28 @@ class Parser
     }
 
     // Parsers
-    std::shared_ptr<Expr> parseExpression();
-    std::shared_ptr<Expr> parseAssignment();
-    std::shared_ptr<Expr> parseEquality();
-    std::shared_ptr<Expr> parseComparison();
-    std::shared_ptr<Expr> parseTerm();
-    std::shared_ptr<Expr> parseFactor();
-    std::shared_ptr<Expr> parseUnary();
-    std::shared_ptr<Expr> parsePrimary();
+    ExprPtr parseExpression();
+    ExprPtr parseAssignment();
+    ExprPtr parseEquality();
+    ExprPtr parseComparison();
+    ExprPtr parseTerm();
+    ExprPtr parseFactor();
+    ExprPtr parseUnary();
+    ExprPtr parsePrimary();
 
-    std::shared_ptr<Stmt> parseWhileStmt();
-    std::shared_ptr<Stmt> parseIfStmt();
-    std::shared_ptr<Stmt> parseBlock();
-    std::shared_ptr<Stmt> parsePrintStmt();
-    std::shared_ptr<Stmt> parseExpressionStmt();
-    std::shared_ptr<Stmt> parseStatement();
-    std::shared_ptr<Stmt> parseVarDeclaration();
-    std::shared_ptr<Stmt> parseDeclaration();
+    StmtPtr parseWhileStmt();
+    StmtPtr parseIfStmt();
+    StmtPtr parseBlock();
+    StmtPtr parsePrintStmt();
+    StmtPtr parseExpressionStmt();
+    StmtPtr parseStatement();
+    StmtPtr parseVarDeclaration();
+    StmtPtr parseDeclaration();
 
     void synchronize();
 public:
-    Parser(const std::vector<std::shared_ptr<Token>>& tokens);
+    Parser(const std::vector<TokenPtr>& tokens);
 
-    std::optional<std::vector<std::shared_ptr<Stmt>>> parse();
+    std::optional<std::vector<StmtPtr>> parse();
 };
 
