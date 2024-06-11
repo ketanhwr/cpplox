@@ -229,12 +229,11 @@ void Interpreter::visitVariableExpr(VariableExpr& expr)
 void Interpreter::visitBlockStmt(BlockStmt& stmt)
 {
     auto currentEnv = env_;
-
     env_ = std::make_shared<Environment>(currentEnv);
 
-    executeBlock(*stmt.statements_);
+    EnvGuard envGuard{env_, currentEnv};
 
-    env_ = currentEnv;
+    executeBlock(*stmt.statements_);
 }
 
 void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)

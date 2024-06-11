@@ -22,3 +22,19 @@ private:
     std::shared_ptr<Environment> parent_;
 
 };
+
+struct EnvGuard
+{
+    EnvGuard(std::shared_ptr<Environment>& currentEnv, std::shared_ptr<Environment> oldEnv)
+        : newEnv_{currentEnv}, oldEnv_{oldEnv}
+    {}
+
+    ~EnvGuard() {
+        newEnv_ = oldEnv_;
+    }
+
+private:
+    std::shared_ptr<Environment>& newEnv_;
+    std::shared_ptr<Environment> oldEnv_;
+};
+
