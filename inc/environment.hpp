@@ -13,4 +13,6 @@ struct Environment
     void define(const std::string& name, LoxValuePtr value);
 
     LoxValuePtr get(std::shared_ptr<Token> token);
+
+    void assign(std::shared_ptr<Token> token, LoxValuePtr value);
 };

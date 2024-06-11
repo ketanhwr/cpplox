@@ -61,6 +61,7 @@ def main():
         sys.exit(1)
 
     define_ast(sys.argv[1], "Expr", {
+        "Assign": "Token name | Expr value",
         "Binary": "Expr left | Token op | Expr right",
         "Grouping": "Expr expression",
         "Literal": "LoxValue value",

@@ -55,7 +55,25 @@ std::shared_ptr<Token> Parser::consume(TokenType tokenType, const std::string& m
 
 std::shared_ptr<Expr> Parser::parseExpression()
 {
-    return parseEquality();
+    return parseAssignment();
+}
+
+std::shared_ptr<Expr> Parser::parseAssignment()
+{
+    auto expr = parseEquality();
+
+    if (match(TokenType::EQUAL)) {
+        auto equals = previous();
+        auto value = parseAssignment();
+
+        if (auto var = std::dynamic_pointer_cast<VariableExpr>(expr)) {
+            return std::make_shared<AssignExpr>(var->name_, value);
+        }
+
+        error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
 }
 
 std::shared_ptr<Expr> Parser::parseEquality()

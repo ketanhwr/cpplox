@@ -8,6 +8,13 @@
 #define CAST(TO_TYPE, FROM_VAL) std::dynamic_pointer_cast<TO_TYPE>(FROM_VAL)
 #define EPS 1e-6
 
+void Interpreter::visitAssignExpr(AssignExpr& expr)
+{
+    auto right = evaluate(expr.value_);
+
+    env_.assign(expr.name_, result_);
+}
+
 void Interpreter::visitBinaryExpr(BinaryExpr& expr)
 {
     auto left = evaluate(expr.left_);

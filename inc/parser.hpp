@@ -41,6 +41,7 @@ class Parser
 
     // Parsers
     std::shared_ptr<Expr> parseExpression();
+    std::shared_ptr<Expr> parseAssignment();
     std::shared_ptr<Expr> parseEquality();
     std::shared_ptr<Expr> parseComparison();
     std::shared_ptr<Expr> parseTerm();

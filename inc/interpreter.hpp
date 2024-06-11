@@ -16,11 +16,12 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     Environment env_;
 
     // Visitor methods for Expressions
+    void visitAssignExpr(AssignExpr& expr) override;
     void visitBinaryExpr(BinaryExpr& expr) override;
     void visitGroupingExpr(GroupingExpr& expr) override;
     void visitLiteralExpr(LiteralExpr& expr) override;
     void visitUnaryExpr(UnaryExpr& expr) override;
-	void visitVariableExpr(VariableExpr& expr) override;
+    void visitVariableExpr(VariableExpr& expr) override;
 
     // Visitor methods for Statements
     void visitExpressionStmt(ExpressionStmt& stmt) override;

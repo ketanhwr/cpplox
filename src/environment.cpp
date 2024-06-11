@@ -22,3 +22,19 @@ LoxValuePtr Environment::get(std::shared_ptr<Token> token)
     throw interpreter_error{token, std::move(errorMsg_)};
 }
 
+void Environment::assign(std::shared_ptr<Token> token, LoxValuePtr value)
+{
+    auto it = values.find(token->lexeme_);
+
+    if (it != values.end()) {
+        it->second = value;
+        return;
+    }
+
+    std::string errorMsg_{"Undefined variable '"};
+    errorMsg_.append(token->lexeme_);
+    errorMsg_.append(1, '\'');
+
+    throw interpreter_error{token, std::move(errorMsg_)};
+}
+
