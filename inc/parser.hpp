@@ -51,6 +51,7 @@ class Parser
     ExprPtr parseOr();
     ExprPtr parseAnd();
 
+    StmtPtr parseForStmt();
     StmtPtr parseWhileStmt();
     StmtPtr parseIfStmt();
     StmtPtr parseBlock();

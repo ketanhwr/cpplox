@@ -201,6 +201,60 @@ ExprPtr Parser::parsePrimary()
     throw error(peek(), "Expected expression");
 }
 
+StmtPtr Parser::parseForStmt()
+{
+    consume(TokenType::LEFT_PAREN, "Expected '(' after for");
+
+    StmtPtr init;
+    if (match(TokenType::SEMICOLON)) {
+        init = nullptr;
+    } else if (match(TokenType::VAR)) {
+        init = parseVarDeclaration();
+    } else {
+        init = parseExpressionStmt();
+    }
+
+    ExprPtr cond;
+    if (!check(TokenType::SEMICOLON)) {
+        cond = parseExpression();
+    }
+
+    consume(TokenType::SEMICOLON, "Expected ';' after for-condition");
+
+    ExprPtr increment;
+    if (!check(TokenType::RIGHT_PAREN)) {
+        increment = parseExpression();
+    }
+
+    consume(TokenType::RIGHT_PAREN, "Expected ')' after for clauses");
+
+    StmtPtr body = parseStatement();
+
+    if (increment) {
+        body = std::make_shared<BlockStmt>(
+                std::make_shared<std::vector<StmtPtr>>(
+                    std::initializer_list<StmtPtr>{body, std::make_shared<ExpressionStmt>(increment)}
+                )
+            );
+    }
+
+    if (!cond) {
+        cond = std::make_shared<LiteralExpr>(std::make_shared<LoxBool>(true));
+    }
+
+    body = std::make_shared<WhileStmt>(cond, body);
+
+    if (init) {
+        body = std::make_shared<BlockStmt>(
+                std::make_shared<std::vector<StmtPtr>>(
+                    std::initializer_list<StmtPtr>{init, body}
+                )
+            );
+    }
+    
+    return body;
+}
+
 StmtPtr Parser::parseWhileStmt()
 {
     consume(TokenType::LEFT_PAREN, "Expected '(' after while");
@@ -276,6 +330,9 @@ StmtPtr Parser::parseStatement()
     }
     if (match(TokenType::WHILE)) {
         return parseWhileStmt();
+    }
+    if (match(TokenType::FOR)) {
+        return parseForStmt();
     }
 
     return parseExpressionStmt();
