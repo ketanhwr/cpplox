@@ -71,7 +71,7 @@ def main():
         "Literal": "LoxValue value",
         "Unary": "Token op | Expr right",
         "Variable": "Token name",
-        # "Logical": "Expr left | Token op | Expr right"
+        "Logical": "Expr left | Token op | Expr right"
     }, [ "token.hpp" ])
 
     define_ast(sys.argv[1], "Stmt", {

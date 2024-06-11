@@ -60,7 +60,7 @@ ExprPtr Parser::parseExpression()
 
 ExprPtr Parser::parseAssignment()
 {
-    auto expr = parseEquality();
+    auto expr = parseOr();
 
     if (match(TokenType::EQUAL)) {
         auto equals = previous();
@@ -71,6 +71,34 @@ ExprPtr Parser::parseAssignment()
         }
 
         error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
+}
+
+ExprPtr Parser::parseOr()
+{
+    auto expr = parseAnd();
+
+    while (match(TokenType::OR)) {
+        auto op = previous();
+        auto right = parseAnd();
+
+        expr = std::make_shared<LogicalExpr>(expr, op, right);
+    }
+
+    return expr;
+}
+
+ExprPtr Parser::parseAnd()
+{
+    auto expr = parseEquality();
+
+    while (match(TokenType::AND)) {
+        auto op = previous();
+        auto right = parseEquality();
+
+        expr = std::make_shared<LogicalExpr>(expr, op, right);
     }
 
     return expr;

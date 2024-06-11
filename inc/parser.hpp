@@ -48,6 +48,8 @@ class Parser
     ExprPtr parseFactor();
     ExprPtr parseUnary();
     ExprPtr parsePrimary();
+    ExprPtr parseOr();
+    ExprPtr parseAnd();
 
     StmtPtr parseWhileStmt();
     StmtPtr parseIfStmt();

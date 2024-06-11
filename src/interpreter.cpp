@@ -226,6 +226,23 @@ void Interpreter::visitVariableExpr(VariableExpr& expr)
     result_ = env_->get(expr.name_);
 }
 
+void Interpreter::visitLogicalExpr(LogicalExpr& expr)
+{
+    auto left = evaluate(expr.left_);
+
+    if (expr.op_->tokenType_ == TokenType::OR) {
+        if (isTruthy(left)) {
+            return;
+        }
+    } else if (expr.op_->tokenType_ == TokenType::AND) {
+        if (!isTruthy(left)) {
+            return;
+        }
+    }
+
+    evaluate(expr.right_);
+}
+
 void Interpreter::visitWhileStmt(WhileStmt& stmt)
 {
     while (isTruthy(evaluate(stmt.condition_))) {
