@@ -194,6 +194,8 @@ std::optional<std::vector<std::shared_ptr<Token>>> Scanner::scanTokens()
                     }
                 } else if (match('*')) {
                     while (!(atEnd() || (peek() == '*' && peekNext() == '/'))) {
+                        if (peek() == '\n') ++line_;
+
                         advance();
                     }
                     // We either reached end of file OR end of comment

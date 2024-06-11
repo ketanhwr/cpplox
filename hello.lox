@@ -10,3 +10,20 @@ a = a + 5.5;   // comment after statement
 */
 
 print a;
+
+{
+    var a = "String A";
+    print a;
+
+    {
+        var a = true;
+        a = !a;
+
+        print a;
+    }
+
+    print a;
+}
+
+print a;
+

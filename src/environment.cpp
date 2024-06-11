@@ -2,17 +2,25 @@
 
 #include "lox_exception.hpp"
 
+Environment::Environment(std::shared_ptr<Environment> parent)
+    : parent_{parent}
+{ }
+
 void Environment::define(const std::string& name, LoxValuePtr value)
 {
-    values.insert({name, value});
+    values_.insert({name, value});
 }
 
 LoxValuePtr Environment::get(std::shared_ptr<Token> token)
 {
-    auto it = values.find(token->lexeme_);
+    auto it = values_.find(token->lexeme_);
 
-    if (it != values.end()) {
+    if (it != values_.end()) {
         return it->second;
+    }
+
+    if (parent_) {
+        return parent_->get(token);
     }
 
     std::string errorMsg_{"Undefined variable '"};
@@ -24,10 +32,15 @@ LoxValuePtr Environment::get(std::shared_ptr<Token> token)
 
 void Environment::assign(std::shared_ptr<Token> token, LoxValuePtr value)
 {
-    auto it = values.find(token->lexeme_);
+    auto it = values_.find(token->lexeme_);
 
-    if (it != values.end()) {
+    if (it != values_.end()) {
         it->second = value;
+        return;
+    }
+
+    if (parent_) {
+        parent_->assign(token, value);
         return;
     }
 

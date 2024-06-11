@@ -6,6 +6,8 @@ def define_ast(output_dir, base_class, ast_types, dependencies = []):
     with open(file=f"{output_dir}/{str.lower(base_class)}.hpp", mode="w") as output_file:
         output_file.write("#pragma once\n\n")
 
+        output_file.write("#include <vector>\n\n")
+
         for dependecy in dependencies:
             output_file.write(f"#include \"{dependecy}\"\n\n")
 
@@ -70,6 +72,7 @@ def main():
     }, [ "token.hpp" ])
 
     define_ast(sys.argv[1], "Stmt", {
+        "Block": "std::vector<std::shared_ptr<Stmt>> statements",
         "Expression": "Expr expression",
         "Print": "Expr expression",
         "Var": "Token name | Expr initializer"

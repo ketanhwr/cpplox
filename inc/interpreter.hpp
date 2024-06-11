@@ -8,12 +8,12 @@
 
 struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
 {
-    Interpreter(bool repl_mode = false) : repl_mode_{repl_mode} {}
+    Interpreter(bool repl_mode = false);
 
     bool repl_mode_;
     LoxValuePtr result_;
 
-    Environment env_;
+    std::shared_ptr<Environment> env_;
 
     // Visitor methods for Expressions
     void visitAssignExpr(AssignExpr& expr) override;
@@ -24,6 +24,7 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     void visitVariableExpr(VariableExpr& expr) override;
 
     // Visitor methods for Statements
+    void visitBlockStmt(BlockStmt& stmt) override;
     void visitExpressionStmt(ExpressionStmt& stmt) override;
     void visitPrintStmt(PrintStmt& stmt) override;
     void visitVarStmt(VarStmt& stmt) override;
@@ -46,6 +47,7 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
 
     LoxValuePtr evaluate(std::shared_ptr<Expr> expr);
     void execute(std::shared_ptr<Stmt> stmt);
+    void executeBlock(const std::vector<std::shared_ptr<Stmt>>& statements);
 
     void interpret(const std::vector<std::shared_ptr<Stmt>>& statements);
 };

@@ -8,11 +8,16 @@
 #define CAST(TO_TYPE, FROM_VAL) std::dynamic_pointer_cast<TO_TYPE>(FROM_VAL)
 #define EPS 1e-6
 
+Interpreter::Interpreter(bool repl_mode)
+    : repl_mode_{repl_mode}
+    , env_{std::make_shared<Environment>()}
+{ }
+
 void Interpreter::visitAssignExpr(AssignExpr& expr)
 {
     auto right = evaluate(expr.value_);
 
-    env_.assign(expr.name_, result_);
+    env_->assign(expr.name_, result_);
 }
 
 void Interpreter::visitBinaryExpr(BinaryExpr& expr)
@@ -218,7 +223,18 @@ void Interpreter::visitUnaryExpr(UnaryExpr& expr)
 
 void Interpreter::visitVariableExpr(VariableExpr& expr)
 {
-    result_ = env_.get(expr.name_);
+    result_ = env_->get(expr.name_);
+}
+
+void Interpreter::visitBlockStmt(BlockStmt& stmt)
+{
+    auto currentEnv = env_;
+
+    env_ = std::make_shared<Environment>(currentEnv);
+
+    executeBlock(*stmt.statements_);
+
+    env_ = currentEnv;
 }
 
 void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
@@ -246,7 +262,7 @@ void Interpreter::visitVarStmt(VarStmt& stmt)
         initVal = std::make_shared<LoxNil>();
     }
 
-    env_.define(stmt.name_->lexeme_, initVal);
+    env_->define(stmt.name_->lexeme_, initVal);
 
     if (repl_mode_) {
         std::cout << *initVal << std::endl;
@@ -368,6 +384,13 @@ LoxValuePtr Interpreter::evaluate(std::shared_ptr<Expr> expr)
 void Interpreter::execute(std::shared_ptr<Stmt> stmt)
 {
     stmt->accept(*this);
+}
+
+void Interpreter::executeBlock(const std::vector<std::shared_ptr<Stmt>>& statements)
+{
+    for (auto stmt: statements) {
+        stmt->accept(*this);
+    }
 }
 
 void Interpreter::interpret(const std::vector<std::shared_ptr<Stmt>>& statements)

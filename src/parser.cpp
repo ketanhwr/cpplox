@@ -173,6 +173,19 @@ std::shared_ptr<Expr> Parser::parsePrimary()
     throw error(peek(), "Expected expression");
 }
 
+std::shared_ptr<Stmt> Parser::parseBlock()
+{
+    auto statements = std::make_shared<std::vector<std::shared_ptr<Stmt>>>();
+
+    while (!check(TokenType::RIGHT_BRACE) && !atEnd()) {
+        statements->push_back(parseDeclaration());
+    }
+
+    consume(TokenType::RIGHT_BRACE, "Expected '}' after block");
+
+    return std::make_shared<BlockStmt>(statements);
+}
+
 std::shared_ptr<Stmt> Parser::parsePrintStmt()
 {
     auto exp = parseExpression();
@@ -195,6 +208,9 @@ std::shared_ptr<Stmt> Parser::parseStatement()
 {
     if (match(TokenType::PRINT)) {
         return parsePrintStmt();
+    }
+    if (match(TokenType::LEFT_BRACE)) {
+        return parseBlock();
     }
 
     return parseExpressionStmt();
