@@ -37,6 +37,7 @@ add_executable(cpplox
     src/parser.cpp
     src/interpreter.cpp
     src/environment.cpp
+    src/runner.cpp
     "${generated_dir}/expr.hpp"
     "${generated_dir}/stmt.hpp"
 )
