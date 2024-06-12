@@ -71,13 +71,14 @@ def main():
         "Literal": "LoxValue value",
         "Unary": "Token op | Expr right",
         "Variable": "Token name",
-        "Logical": "Expr left | Token op | Expr right"
+        "Logical": "Expr left | Token op | Expr right",
+        "Call": "Expr callee | Token paren | std::vector<ExprPtr> args"
     }, [ "token.hpp" ])
 
     define_ast(sys.argv[1], "Stmt", {
         "While": "Expr condition | Stmt statements",
         "If": "Expr condition | Stmt thenStmt | Stmt elseStmt",
-        "Block": "std::vector<std::shared_ptr<Stmt>> statements",
+        "Block": "std::vector<StmtPtr> statements",
         "Expression": "Expr expression",
         "Print": "Expr expression",
         "Var": "Token name | Expr initializer"
