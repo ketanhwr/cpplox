@@ -58,6 +58,7 @@ class Parser
     StmtPtr parseIfStmt();
     decltype(BlockStmt::statements_) parseBlock();
     StmtPtr parsePrintStmt();
+    StmtPtr parseReturnStmt();
     StmtPtr parseExpressionStmt();
     StmtPtr parseStatement();
     StmtPtr parseVarDeclaration();

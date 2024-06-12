@@ -21,3 +21,13 @@ struct parsing_error: public std::runtime_error
     {}
 };
 
+struct return_value: public std::runtime_error
+{
+    LoxValuePtr value_;
+
+    return_value(LoxValuePtr value)
+        : value_{value}
+        , std::runtime_error{""}
+    {}
+};
+

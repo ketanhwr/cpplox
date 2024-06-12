@@ -34,6 +34,7 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     void visitPrintStmt(PrintStmtPtr stmt) override;
     void visitVarStmt(VarStmtPtr stmt) override;
     void visitFunctionStmt(FunctionStmtPtr stmt) override;
+    void visitReturnStmt(ReturnStmtPtr stmt) override;
 
     // Helpers
     bool isTruthy(LoxValuePtr value);

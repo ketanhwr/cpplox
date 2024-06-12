@@ -322,8 +322,21 @@ void Interpreter::visitVarStmt(VarStmtPtr stmt)
 
 void Interpreter::visitFunctionStmt(FunctionStmtPtr stmt)
 {
-    auto funcDef = std::make_shared<LoxFunction>(stmt);
+    auto funcDef = std::make_shared<LoxFunction>(stmt, env_);
     env_->define(stmt->name_->lexeme_, funcDef);
+}
+
+void Interpreter::visitReturnStmt(ReturnStmtPtr stmt)
+{
+    LoxValuePtr retValue;
+    
+    if (stmt->value_) {
+        retValue = evaluate(stmt->value_);
+    } else {
+        retValue = std::make_shared<LoxNil>();
+    }
+        
+    throw return_value{retValue};
 }
 
 bool Interpreter::isTruthy(LoxValuePtr value)

@@ -341,6 +341,20 @@ StmtPtr Parser::parsePrintStmt()
     return std::make_shared<PrintStmt>(exp);
 }
 
+StmtPtr Parser::parseReturnStmt()
+{
+    auto returnToken = previous();
+
+    ExprPtr value;
+    if (!check(TokenType::SEMICOLON)) {
+        value = parseExpression();
+    }
+
+    consume(TokenType::SEMICOLON, "Expected ';' after return statement.");
+
+    return std::make_shared<ReturnStmt>(returnToken, value);
+}
+
 StmtPtr Parser::parseExpressionStmt()
 {
     auto exp = parseExpression();
@@ -366,6 +380,9 @@ StmtPtr Parser::parseStatement()
     }
     if (match(TokenType::FOR)) {
         return parseForStmt();
+    }
+    if (match(TokenType::RETURN)) {
+        return parseReturnStmt();
     }
 
     return parseExpressionStmt();
