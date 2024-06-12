@@ -319,7 +319,7 @@ StmtPtr Parser::parseIfStmt()
     return std::make_shared<IfStmt>(cond, thenBlock, elseBlock);
 }
 
-StmtPtr Parser::parseBlock()
+decltype(BlockStmt::statements_) Parser::parseBlock()
 {
     auto statements = std::make_shared<std::vector<StmtPtr>>();
 
@@ -329,7 +329,7 @@ StmtPtr Parser::parseBlock()
 
     consume(TokenType::RIGHT_BRACE, "Expected '}' after block");
 
-    return std::make_shared<BlockStmt>(statements);
+    return statements;
 }
 
 StmtPtr Parser::parsePrintStmt()
@@ -356,7 +356,7 @@ StmtPtr Parser::parseStatement()
         return parsePrintStmt();
     }
     if (match(TokenType::LEFT_BRACE)) {
-        return parseBlock();
+        return std::make_shared<BlockStmt>(parseBlock());
     }
     if (match(TokenType::IF)) {
         return parseIfStmt();
@@ -386,11 +386,38 @@ StmtPtr Parser::parseVarDeclaration()
     return std::make_shared<VarStmt>(ident, init);
 }
 
+StmtPtr Parser::parseFunction(const std::string& kind)
+{
+    auto name = consume(TokenType::IDENTIFIER, std::string{"Expected "} + kind + std::string{" name."});
+
+    consume(TokenType::LEFT_PAREN, std::string{"Expected '(' after "} + kind + std::string{" name."});
+
+    auto params = std::make_shared<std::vector<TokenPtr>>();
+    if (!check(TokenType::RIGHT_PAREN)) {
+        do {
+            if (params->size() >= 255) {
+                error(peek(), "Can't have more than 255 parameters.");
+            }
+            params->push_back(consume(TokenType::IDENTIFIER, "Expected parameter name."));
+        } while (match(TokenType::COMMA));
+    }
+
+    consume(TokenType::RIGHT_PAREN, "Expected ')' after parameters.");
+    consume(TokenType::LEFT_BRACE, std::string{"Expected '{' before "} + kind + std::string{" body."});
+
+    auto body = parseBlock();
+
+    return std::make_shared<FunctionStmt>(name, params, body);
+}
+
 StmtPtr Parser::parseDeclaration()
 {
     try {
         if (match(TokenType::VAR)) {
             return parseVarDeclaration();
+        }
+        if (match(TokenType::FUN)) {
+            return parseFunction("function");
         }
         return parseStatement();
 

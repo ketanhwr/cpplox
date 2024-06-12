@@ -23,7 +23,7 @@ def define_ast(output_dir, base_class, ast_types, dependencies = []):
         output_file.write("\t{\n")
 
         for k in ast_types:
-            output_file.write(f"\t\tvirtual void visit{k}{base_class}({k}{base_class}& {str.lower(base_class)}) = 0;\n")
+            output_file.write(f"\t\tvirtual void visit{k}{base_class}(std::shared_ptr<{k}{base_class}> {str.lower(base_class)}) = 0;\n")
 
         output_file.write("\t};\n\n")
 
@@ -36,7 +36,7 @@ def define_ast(output_dir, base_class, ast_types, dependencies = []):
         for k, v in ast_types.items():
             attrs = [[x.strip().split()[0].strip(), x.strip().split()[1].strip()] for x in v.split('|') ]
 
-            output_file.write(f"struct {k}{base_class}: public {base_class}\n")
+            output_file.write(f"struct {k}{base_class}: public {base_class}, public std::enable_shared_from_this<{k}{base_class}>\n")
             output_file.write("{\n")
 
             for var in attrs:
@@ -54,10 +54,11 @@ def define_ast(output_dir, base_class, ast_types, dependencies = []):
 
             # Override accept() function
             output_file.write("\tvoid accept(AbstractVisitor& visitor) override {\n")
-            output_file.write(f"\t\tvisitor.visit{k}{base_class}(*this);\n")
+            output_file.write(f"\t\tvisitor.visit{k}{base_class}(shared_from_this());\n")
             output_file.write("\t}\n")
 
             output_file.write("};\n\n")
+            output_file.write(f"using {k}{base_class}Ptr = std::shared_ptr<{k}{base_class}>;\n\n")
 
 def main():
     if len(sys.argv) != 2:
@@ -81,7 +82,8 @@ def main():
         "Block": "std::vector<StmtPtr> statements",
         "Expression": "Expr expression",
         "Print": "Expr expression",
-        "Var": "Token name | Expr initializer"
+        "Var": "Token name | Expr initializer",
+        "Function": "Token name | std::vector<TokenPtr> params | std::vector<StmtPtr> body"
     }, [ "expr.hpp" ])
 
 if __name__ == "__main__":

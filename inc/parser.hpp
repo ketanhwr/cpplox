@@ -51,17 +51,17 @@ class Parser
     ExprPtr parsePrimary();
     ExprPtr parseOr();
     ExprPtr parseAnd();
-
     ExprPtr finishCall(ExprPtr expr);
 
     StmtPtr parseForStmt();
     StmtPtr parseWhileStmt();
     StmtPtr parseIfStmt();
-    StmtPtr parseBlock();
+    decltype(BlockStmt::statements_) parseBlock();
     StmtPtr parsePrintStmt();
     StmtPtr parseExpressionStmt();
     StmtPtr parseStatement();
     StmtPtr parseVarDeclaration();
+    StmtPtr parseFunction(const std::string& kind);
     StmtPtr parseDeclaration();
 
     void synchronize();

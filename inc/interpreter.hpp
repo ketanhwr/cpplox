@@ -17,22 +17,23 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     std::shared_ptr<Environment> env_;
 
     // Visitor methods for Expressions
-    void visitAssignExpr(AssignExpr& expr) override;
-    void visitBinaryExpr(BinaryExpr& expr) override;
-    void visitGroupingExpr(GroupingExpr& expr) override;
-    void visitLiteralExpr(LiteralExpr& expr) override;
-    void visitUnaryExpr(UnaryExpr& expr) override;
-    void visitVariableExpr(VariableExpr& expr) override;
-    void visitLogicalExpr(LogicalExpr& expr) override;
-    void visitCallExpr(CallExpr& expr) override;
+    void visitAssignExpr(AssignExprPtr expr) override;
+    void visitBinaryExpr(BinaryExprPtr expr) override;
+    void visitGroupingExpr(GroupingExprPtr expr) override;
+    void visitLiteralExpr(LiteralExprPtr expr) override;
+    void visitUnaryExpr(UnaryExprPtr expr) override;
+    void visitVariableExpr(VariableExprPtr expr) override;
+    void visitLogicalExpr(LogicalExprPtr expr) override;
+    void visitCallExpr(CallExprPtr expr) override;
 
     // Visitor methods for Statements
-    void visitWhileStmt(WhileStmt& stmt) override;
-    void visitIfStmt(IfStmt& stmt) override;
-    void visitBlockStmt(BlockStmt& stmt) override;
-    void visitExpressionStmt(ExpressionStmt& stmt) override;
-    void visitPrintStmt(PrintStmt& stmt) override;
-    void visitVarStmt(VarStmt& stmt) override;
+    void visitWhileStmt(WhileStmtPtr stmt) override;
+    void visitIfStmt(IfStmtPtr stmt) override;
+    void visitBlockStmt(BlockStmtPtr stmt) override;
+    void visitExpressionStmt(ExpressionStmtPtr stmt) override;
+    void visitPrintStmt(PrintStmtPtr stmt) override;
+    void visitVarStmt(VarStmtPtr stmt) override;
+    void visitFunctionStmt(FunctionStmtPtr stmt) override;
 
     // Helpers
     bool isTruthy(LoxValuePtr value);
@@ -52,7 +53,7 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
 
     LoxValuePtr evaluate(ExprPtr expr);
     void execute(StmtPtr stmt);
-    void executeBlock(const std::vector<StmtPtr>& statements);
+    void executeBlock(std::shared_ptr<std::vector<StmtPtr>> statements, std::shared_ptr<Environment> env);
 
     void interpret(const std::vector<StmtPtr>& statements);
 };

@@ -8,9 +8,9 @@ struct AstPrinter: public Expr::AbstractVisitor
 {
     std::ostringstream result_;
 
-    void visitBinaryExpr(BinaryExpr& expr) override;
-    void visitGroupingExpr(GroupingExpr& expr) override;
-    void visitLiteralExpr(LiteralExpr& expr) override;
-    void visitUnaryExpr(UnaryExpr& expr) override;
+    void visitBinaryExpr(BinaryExprPtr expr) override;
+    void visitGroupingExpr(GroupingExprPtr expr) override;
+    void visitLiteralExpr(LiteralExprPtr expr) override;
+    void visitUnaryExpr(UnaryExprPtr expr) override;
 };
 

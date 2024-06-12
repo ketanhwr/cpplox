@@ -33,12 +33,12 @@ add_executable(cpplox
     src/scanner.cpp
     src/token.cpp
     src/value.cpp
-    src/ast_printer.cpp
     src/parser.cpp
     src/interpreter.cpp
     src/environment.cpp
     src/runner.cpp
     src/native_clock.cpp
+    src/function.cpp
     "${generated_dir}/expr.hpp"
     "${generated_dir}/stmt.hpp"
 )

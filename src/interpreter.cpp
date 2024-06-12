@@ -2,6 +2,7 @@
 
 #include "lox_exception.hpp"
 #include "native_clock.hpp"
+#include "function.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -17,23 +18,23 @@ Interpreter::Interpreter(bool repl_mode)
     global_->define("clock", std::make_shared<NativeClock>());
 }
 
-void Interpreter::visitAssignExpr(AssignExpr& expr)
+void Interpreter::visitAssignExpr(AssignExprPtr expr)
 {
-    auto right = evaluate(expr.value_);
+    auto right = evaluate(expr->value_);
 
-    env_->assign(expr.name_, result_);
+    env_->assign(expr->name_, result_);
 }
 
-void Interpreter::visitBinaryExpr(BinaryExpr& expr)
+void Interpreter::visitBinaryExpr(BinaryExprPtr expr)
 {
-    auto left = evaluate(expr.left_);
-    auto right = evaluate(expr.right_);
+    auto left = evaluate(expr->left_);
+    auto right = evaluate(expr->right_);
 
-    switch (expr.op_->tokenType_)
+    switch (expr->op_->tokenType_)
     {
         case TokenType::MINUS:
         {
-            checkNumberOps(expr.op_, left, right);
+            checkNumberOps(expr->op_, left, right);
 
             if (isFloat(left) || isFloat(right)) {
                 auto val1 = getFloat(left), val2 = getFloat(right);
@@ -47,13 +48,13 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
         }
         case TokenType::SLASH:
         {
-            checkNumberOps(expr.op_, left, right);
+            checkNumberOps(expr->op_, left, right);
 
             if (isFloat(left) || isFloat(right)) {
                 auto val1 = getFloat(left), val2 = getFloat(right);
 
                 if (std::abs(val2) < EPS) {
-                    throw interpreter_error{expr.op_, "Division by 0"};
+                    throw interpreter_error{expr->op_, "Division by 0"};
                 }
 
                 result_ = std::make_shared<LoxFloat>(val1 / val2);
@@ -61,7 +62,7 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
                 auto val1 = getInt(left), val2 = getInt(right);
 
                 if (val2 == 0) {
-                    throw interpreter_error{expr.op_, "Division by 0"};
+                    throw interpreter_error{expr->op_, "Division by 0"};
                 }
 
                 result_ = std::make_shared<LoxInteger>(val1 / val2);
@@ -71,7 +72,7 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
         }
         case TokenType::STAR:
         {
-            checkNumberOps(expr.op_, left, right);
+            checkNumberOps(expr->op_, left, right);
 
             if (isFloat(left) || isFloat(right)) {
                 auto val1 = getFloat(left), val2 = getFloat(right);
@@ -96,14 +97,14 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
             } else if (isString(left) && isString(right)) {
                 result_ = std::make_shared<LoxString>(CAST(LoxString, left)->value_ + CAST(LoxString, right)->value_);
             } else {
-                throw interpreter_error{expr.op_, "Operands must be both strings or numbers."};
+                throw interpreter_error{expr->op_, "Operands must be both strings or numbers."};
             }
 
             break;
         }
         case TokenType::GREATER:
         {
-            checkNumberOps(expr.op_, left, right);
+            checkNumberOps(expr->op_, left, right);
 
             bool comp;
 
@@ -120,7 +121,7 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
         }
         case TokenType::GREATER_EQUAL:
         {
-            checkNumberOps(expr.op_, left, right);
+            checkNumberOps(expr->op_, left, right);
 
             bool comp;
 
@@ -137,7 +138,7 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
         }
         case TokenType::LESS:
         {
-            checkNumberOps(expr.op_, left, right);
+            checkNumberOps(expr->op_, left, right);
 
             bool comp;
 
@@ -154,7 +155,7 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
         }
         case TokenType::LESS_EQUAL:
         {
-            checkNumberOps(expr.op_, left, right);
+            checkNumberOps(expr->op_, left, right);
 
             bool comp;
 
@@ -186,21 +187,21 @@ void Interpreter::visitBinaryExpr(BinaryExpr& expr)
     }
 }
 
-void Interpreter::visitGroupingExpr(GroupingExpr& expr)
+void Interpreter::visitGroupingExpr(GroupingExprPtr expr)
 {
-    result_ = evaluate(expr.expression_);
+    result_ = evaluate(expr->expression_);
 }
 
-void Interpreter::visitLiteralExpr(LiteralExpr& expr)
+void Interpreter::visitLiteralExpr(LiteralExprPtr expr)
 {
-    result_ = expr.value_;
+    result_ = expr->value_;
 }
 
-void Interpreter::visitUnaryExpr(UnaryExpr& expr)
+void Interpreter::visitUnaryExpr(UnaryExprPtr expr)
 {
-    auto right = evaluate(expr.right_);
+    auto right = evaluate(expr->right_);
 
-    switch (expr.op_->tokenType_) {
+    switch (expr->op_->tokenType_) {
         case TokenType::BANG:
         {
             result_ = std::make_shared<LoxBool>(!isTruthy(right));
@@ -208,7 +209,7 @@ void Interpreter::visitUnaryExpr(UnaryExpr& expr)
         }
         case TokenType::MINUS:
         {
-            checkNumberOp(expr.op_, right);
+            checkNumberOp(expr->op_, right);
 
             if (isFloat(right)) {
                 result_ = std::make_shared<LoxFloat>(-getFloat(right));
@@ -225,34 +226,34 @@ void Interpreter::visitUnaryExpr(UnaryExpr& expr)
     }
 }
 
-void Interpreter::visitVariableExpr(VariableExpr& expr)
+void Interpreter::visitVariableExpr(VariableExprPtr expr)
 {
-    result_ = env_->get(expr.name_);
+    result_ = env_->get(expr->name_);
 }
 
-void Interpreter::visitLogicalExpr(LogicalExpr& expr)
+void Interpreter::visitLogicalExpr(LogicalExprPtr expr)
 {
-    auto left = evaluate(expr.left_);
+    auto left = evaluate(expr->left_);
 
-    if (expr.op_->tokenType_ == TokenType::OR) {
+    if (expr->op_->tokenType_ == TokenType::OR) {
         if (isTruthy(left)) {
             return;
         }
-    } else if (expr.op_->tokenType_ == TokenType::AND) {
+    } else if (expr->op_->tokenType_ == TokenType::AND) {
         if (!isTruthy(left)) {
             return;
         }
     }
 
-    evaluate(expr.right_);
+    evaluate(expr->right_);
 }
 
-void Interpreter::visitCallExpr(CallExpr& expr)
+void Interpreter::visitCallExpr(CallExprPtr expr)
 {
-    auto callee = evaluate(expr.callee_);
+    auto callee = evaluate(expr->callee_);
 
     std::vector<LoxValuePtr> args;
-    for (auto arg: *expr.args_) {
+    for (auto arg: *(expr->args_)) {
         args.push_back(evaluate(arg));
     }
 
@@ -264,63 +265,64 @@ void Interpreter::visitCallExpr(CallExpr& expr)
             errorMsg_.append(std::to_string(args.size()));
             errorMsg_.append(1, '.');
 
-            throw interpreter_error{expr.paren_, errorMsg_};
+            throw interpreter_error{expr->paren_, errorMsg_};
         }
 
         result_ = function->call(*this, args);
     } else {
-        throw interpreter_error{expr.paren_, "Can only call functions and classes."};
+        throw interpreter_error{expr->paren_, "Can only call functions and classes."};
     }
 }
 
-void Interpreter::visitWhileStmt(WhileStmt& stmt)
+void Interpreter::visitWhileStmt(WhileStmtPtr stmt)
 {
-    while (isTruthy(evaluate(stmt.condition_))) {
-        execute(stmt.statements_);
+    while (isTruthy(evaluate(stmt->condition_))) {
+        execute(stmt->statements_);
     }
 }
 
-void Interpreter::visitIfStmt(IfStmt& stmt)
+void Interpreter::visitIfStmt(IfStmtPtr stmt)
 {
-    if (isTruthy(evaluate(stmt.condition_))) {
-        execute(stmt.thenStmt_);
-    } else if (stmt.elseStmt_) {
-        execute(stmt.elseStmt_);
+    if (isTruthy(evaluate(stmt->condition_))) {
+        execute(stmt->thenStmt_);
+    } else if (stmt->elseStmt_) {
+        execute(stmt->elseStmt_);
     }
 }
 
-void Interpreter::visitBlockStmt(BlockStmt& stmt)
+void Interpreter::visitBlockStmt(BlockStmtPtr stmt)
 {
-    auto currentEnv = env_;
-    env_ = std::make_shared<Environment>(currentEnv);
-
-    EnvGuard envGuard{env_, currentEnv};
-
-    executeBlock(*stmt.statements_);
+    executeBlock(stmt->statements_, std::make_shared<Environment>(env_));
 }
 
-void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
+void Interpreter::visitExpressionStmt(ExpressionStmtPtr stmt)
 {
-    evaluate(stmt.expression_);
+    evaluate(stmt->expression_);
 }
 
-void Interpreter::visitPrintStmt(PrintStmt& stmt)
+void Interpreter::visitPrintStmt(PrintStmtPtr stmt)
 {
-    auto value = evaluate(stmt.expression_);
+    auto value = evaluate(stmt->expression_);
 
     std::cout << *value << std::endl;
 }
 
-void Interpreter::visitVarStmt(VarStmt& stmt)
+void Interpreter::visitVarStmt(VarStmtPtr stmt)
 {
     LoxValuePtr initVal;
-    if (stmt.initializer_) {
-        initVal = evaluate(stmt.initializer_);
+    if (stmt->initializer_) {
+        initVal = evaluate(stmt->initializer_);
     } else {
         initVal = std::make_shared<LoxNil>();
     }
 
-    env_->define(stmt.name_->lexeme_, initVal);
+    env_->define(stmt->name_->lexeme_, initVal);
+}
+
+void Interpreter::visitFunctionStmt(FunctionStmtPtr stmt)
+{
+    auto funcDef = std::make_shared<LoxFunction>(stmt);
+    env_->define(stmt->name_->lexeme_, funcDef);
 }
 
 bool Interpreter::isTruthy(LoxValuePtr value)
@@ -444,9 +446,14 @@ void Interpreter::execute(StmtPtr stmt)
     }
 }
 
-void Interpreter::executeBlock(const std::vector<StmtPtr>& statements)
+void Interpreter::executeBlock(std::shared_ptr<std::vector<StmtPtr>> statements, std::shared_ptr<Environment> env)
 {
-    for (auto stmt: statements) {
+    auto previousEnv = env_;
+    env_ = env;
+
+    EnvGuard envGuard{env_, previousEnv};
+
+    for (auto stmt: *statements) {
         stmt->accept(*this);
     }
 }
