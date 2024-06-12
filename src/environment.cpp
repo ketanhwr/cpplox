@@ -8,7 +8,7 @@ Environment::Environment(std::shared_ptr<Environment> parent)
 
 void Environment::define(const std::string& name, LoxValuePtr value)
 {
-    values_.insert({name, value});
+    values_.insert_or_assign(name, value);
 }
 
 LoxValuePtr Environment::get(TokenPtr token)
