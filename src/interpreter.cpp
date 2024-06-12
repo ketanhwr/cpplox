@@ -12,6 +12,7 @@
 
 Interpreter::Interpreter(bool repl_mode)
     : repl_mode_{repl_mode}
+    , result_{std::make_shared<LoxNil>()}
     , global_{std::make_shared<Environment>()}
     , env_{global_}
 {

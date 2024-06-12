@@ -49,3 +49,13 @@ print "Fibonacci series:";
 
 fib(10);
 
+print "";
+print "Counting using recursion";
+
+fun count(n) {
+    if (n > 1) count(n-1);
+    print n;
+}
+
+count(3);
+
