@@ -1,6 +1,7 @@
 #include "interpreter.hpp"
 
 #include "lox_exception.hpp"
+#include "native_clock.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -10,8 +11,11 @@
 
 Interpreter::Interpreter(bool repl_mode)
     : repl_mode_{repl_mode}
-    , env_{std::make_shared<Environment>()}
-{ }
+    , global_{std::make_shared<Environment>()}
+    , env_{global_}
+{
+    global_->define("clock", std::make_shared<NativeClock>());
+}
 
 void Interpreter::visitAssignExpr(AssignExpr& expr)
 {
@@ -241,6 +245,32 @@ void Interpreter::visitLogicalExpr(LogicalExpr& expr)
     }
 
     evaluate(expr.right_);
+}
+
+void Interpreter::visitCallExpr(CallExpr& expr)
+{
+    auto callee = evaluate(expr.callee_);
+
+    std::vector<LoxValuePtr> args;
+    for (auto arg: *expr.args_) {
+        args.push_back(evaluate(arg));
+    }
+
+    if (auto function = CAST(LoxCallable, callee)) {
+        if (args.size() != function->arity()) {
+            std::string errorMsg_{"Expected "};
+            errorMsg_.append(std::to_string(function->arity()));
+            errorMsg_.append(" argument(s) but got ");
+            errorMsg_.append(std::to_string(args.size()));
+            errorMsg_.append(1, '.');
+
+            throw interpreter_error{expr.paren_, errorMsg_};
+        }
+
+        result_ = function->call(*this, args);
+    } else {
+        throw interpreter_error{expr.paren_, "Can only call functions and classes."};
+    }
 }
 
 void Interpreter::visitWhileStmt(WhileStmt& stmt)

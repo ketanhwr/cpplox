@@ -13,6 +13,7 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     bool repl_mode_;
     LoxValuePtr result_;
 
+    std::shared_ptr<Environment> global_;
     std::shared_ptr<Environment> env_;
 
     // Visitor methods for Expressions
@@ -23,6 +24,7 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     void visitUnaryExpr(UnaryExpr& expr) override;
     void visitVariableExpr(VariableExpr& expr) override;
     void visitLogicalExpr(LogicalExpr& expr) override;
+    void visitCallExpr(CallExpr& expr) override;
 
     // Visitor methods for Statements
     void visitWhileStmt(WhileStmt& stmt) override;

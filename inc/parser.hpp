@@ -47,9 +47,12 @@ class Parser
     ExprPtr parseTerm();
     ExprPtr parseFactor();
     ExprPtr parseUnary();
+    ExprPtr parseCall();
     ExprPtr parsePrimary();
     ExprPtr parseOr();
     ExprPtr parseAnd();
+
+    ExprPtr finishCall(ExprPtr expr);
 
     StmtPtr parseForStmt();
     StmtPtr parseWhileStmt();

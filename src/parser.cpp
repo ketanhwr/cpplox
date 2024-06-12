@@ -169,7 +169,40 @@ ExprPtr Parser::parseUnary()
         return std::make_shared<UnaryExpr>(op, right);
     }
 
-    return parsePrimary();
+    return parseCall();
+}
+
+ExprPtr Parser::parseCall()
+{
+    auto expr = parsePrimary();
+
+    while (true) {
+        if (match(TokenType::LEFT_PAREN)) {
+            expr = finishCall(expr);
+        } else {
+            break;
+        }
+    }
+
+    return expr;
+}
+
+ExprPtr Parser::finishCall(ExprPtr expr)
+{
+    auto args = std::make_shared<std::vector<ExprPtr>>();
+
+    if (!check(TokenType::RIGHT_PAREN)) {
+        do {
+            if (args->size() >= 255) {
+                error(peek(), "Can't have more than 255 argumnets");
+            }
+            args->push_back(parseExpression());
+        } while (match(TokenType::COMMA));
+    }
+
+    auto paren = consume(TokenType::RIGHT_PAREN, "Expected ')' after arguments");
+
+    return std::make_shared<CallExpr>(expr, paren, args);
 }
 
 ExprPtr Parser::parsePrimary()
