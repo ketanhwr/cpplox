@@ -16,6 +16,8 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     std::shared_ptr<Environment> global_;
     std::shared_ptr<Environment> env_;
 
+    std::unordered_map<ExprPtr, int> locals_;
+
     // Visitor methods for Expressions
     void visitAssignExpr(AssignExprPtr expr) override;
     void visitBinaryExpr(BinaryExprPtr expr) override;
@@ -55,6 +57,10 @@ struct Interpreter: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     LoxValuePtr evaluate(ExprPtr expr);
     void execute(StmtPtr stmt);
     void executeBlock(std::shared_ptr<std::vector<StmtPtr>> statements, std::shared_ptr<Environment> env);
+
+    LoxValuePtr lookupVariable(TokenPtr name, ExprPtr expr);
+
+    void resolve(ExprPtr expr, int depth);
 
     void interpret(const std::vector<StmtPtr>& statements);
 };

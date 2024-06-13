@@ -23,7 +23,13 @@ void Interpreter::visitAssignExpr(AssignExprPtr expr)
 {
     auto right = evaluate(expr->value_);
 
-    env_->assign(expr->name_, result_);
+    auto it = locals_.find(expr);
+
+    if (it != locals_.end()) {
+        env_->assignAt(it->second, expr->name_, result_);
+    } else {
+        global_->assign(expr->name_, result_);
+    }
 }
 
 void Interpreter::visitBinaryExpr(BinaryExprPtr expr)
@@ -229,7 +235,7 @@ void Interpreter::visitUnaryExpr(UnaryExprPtr expr)
 
 void Interpreter::visitVariableExpr(VariableExprPtr expr)
 {
-    result_ = env_->get(expr->name_);
+    result_ = lookupVariable(expr->name_, expr);
 }
 
 void Interpreter::visitLogicalExpr(LogicalExprPtr expr)
@@ -470,6 +476,22 @@ void Interpreter::executeBlock(std::shared_ptr<std::vector<StmtPtr>> statements,
     for (auto stmt: *statements) {
         stmt->accept(*this);
     }
+}
+
+LoxValuePtr Interpreter::lookupVariable(TokenPtr name, ExprPtr expr)
+{
+    auto it = locals_.find(expr);
+
+    if (it != locals_.end()) {
+        return env_->getAt(it->second, name->lexeme_);
+    } else {
+        return global_->get(name);
+    }
+}
+
+void Interpreter::resolve(ExprPtr expr, int depth)
+{
+    locals_.insert_or_assign(expr, depth);
 }
 
 void Interpreter::interpret(const std::vector<StmtPtr>& statements)

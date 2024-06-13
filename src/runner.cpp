@@ -5,6 +5,7 @@
 
 #include "scanner.hpp"
 #include "parser.hpp"
+#include "resolver.hpp"
 
 namespace
 {
@@ -42,6 +43,9 @@ void Runner::run()
     auto ast = parser.parse();
 
     if (ast) {
+        Resolver resolver{interpreter_};
+        resolver.resolve(ast.value());
+
         interpreter_.interpret(ast.value());
     }
 }
