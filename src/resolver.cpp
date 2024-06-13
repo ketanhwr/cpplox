@@ -40,7 +40,8 @@ void Resolver::visitVariableExpr(VariableExprPtr expr)
     if (!scopes_.empty()) {
         auto it = scopes_.back().find(expr->name_->lexeme_);
         if (it != scopes_.back().end() && !it->second) {
-            std::cerr << "Can't read local variable in its own initializer." << std::endl;
+            std::cerr << "Line [" << expr->name_->line_ << "]: Can't read local variable in its own initializer." << std::endl;
+            has_error_ = true;
         }
     }
 
@@ -111,11 +112,16 @@ void Resolver::visitFunctionStmt(FunctionStmtPtr stmt)
     declare(stmt->name_);
     define(stmt->name_);
 
-    resolveFunction(stmt);
+    resolveFunction(stmt, FunctionType::FUNCTION);
 }
 
 void Resolver::visitReturnStmt(ReturnStmtPtr stmt)
 {
+    if (currentFunction == FunctionType::NONE) {
+        std::cerr << "Line [" << stmt->keyword_->line_ << "]: Can't return from top-level code." << std::endl;
+        has_error_ = true;
+    }
+
     if (stmt->value_) {
         resolve(stmt->value_);
     }
@@ -148,8 +154,11 @@ void Resolver::resolveLocal(ExprPtr expr, TokenPtr name)
     }
 }
 
-void Resolver::resolveFunction(FunctionStmtPtr stmt)
+void Resolver::resolveFunction(FunctionStmtPtr stmt, FunctionType type)
 {
+    auto previousType = currentFunction;
+    currentFunction = type;
+
     beginScope();
 
     for (auto param: *stmt->params_) {
@@ -159,6 +168,8 @@ void Resolver::resolveFunction(FunctionStmtPtr stmt)
     resolve(stmt->body_);
 
     endScope();
+
+    currentFunction = previousType;
 }
 
 void Resolver::beginScope()
@@ -178,7 +189,8 @@ void Resolver::declare(TokenPtr name)
     auto& scope = scopes_.back();
 
     if (scope.contains(name->lexeme_)) {
-        std::cerr << "Already a variable with this name in this scope" << std::endl;
+        std::cerr << "Line [" << name->line_ << "]: Already a variable with this name in this scope" << std::endl;
+        has_error_ = true;
     }
 
     scope.insert({name->lexeme_, false});
@@ -190,10 +202,12 @@ void Resolver::define(TokenPtr name)
     scopes_.back().insert_or_assign(name->lexeme_, true);
 }
 
-void Resolver::resolve(const std::vector<StmtPtr>& stmts)
+bool Resolver::resolve(const std::vector<StmtPtr>& stmts)
 {
     for (auto stmt: stmts) {
         resolve(stmt);
     }
+
+    return !has_error_;
 }
 

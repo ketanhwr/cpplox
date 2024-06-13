@@ -42,12 +42,17 @@ void Runner::run()
 
     auto ast = parser.parse();
 
-    if (ast) {
-        Resolver resolver{interpreter_};
-        resolver.resolve(ast.value());
-
-        interpreter_.interpret(ast.value());
+    if (!ast) {
+        return;
     }
+
+    Resolver resolver{interpreter_};
+        
+    if (!resolver.resolve(ast.value())) {
+        return;
+    }
+    
+    interpreter_.interpret(ast.value());
 }
 
 void Runner::runFromFile(const char *file)
