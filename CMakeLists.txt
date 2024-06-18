@@ -40,6 +40,7 @@ add_executable(cpplox
     src/native_clock.cpp
     src/function.cpp
     src/resolver.cpp
+    src/lox_class.cpp
     "${generated_dir}/expr.hpp"
     "${generated_dir}/stmt.hpp"
 )

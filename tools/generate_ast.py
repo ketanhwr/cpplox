@@ -84,7 +84,8 @@ def main():
         "Print": "Expr expression",
         "Var": "Token name | Expr initializer",
         "Function": "Token name | std::vector<TokenPtr> params | std::vector<StmtPtr> body",
-        "Return": "Token keyword | Expr value"
+        "Return": "Token keyword | Expr value",
+        "Class": "Token name | std::vector<FunctionStmtPtr> methods"
     }, [ "expr.hpp" ])
 
 if __name__ == "__main__":

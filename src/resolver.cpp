@@ -127,6 +127,12 @@ void Resolver::visitReturnStmt(ReturnStmtPtr stmt)
     }
 }
 
+void Resolver::visitClassStmt(ClassStmtPtr stmt)
+{
+    declare(stmt->name_);
+    define(stmt->name_);
+}
+
 void Resolver::resolve(std::shared_ptr<std::vector<StmtPtr>> stmts)
 {
     for (auto stmt: *stmts) {

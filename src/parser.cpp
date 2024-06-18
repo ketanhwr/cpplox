@@ -403,7 +403,7 @@ StmtPtr Parser::parseVarDeclaration()
     return std::make_shared<VarStmt>(ident, init);
 }
 
-StmtPtr Parser::parseFunction(const std::string& kind)
+FunctionStmtPtr Parser::parseFunction(const std::string& kind)
 {
     auto name = consume(TokenType::IDENTIFIER, std::string{"Expected "} + kind + std::string{" name."});
 
@@ -427,6 +427,22 @@ StmtPtr Parser::parseFunction(const std::string& kind)
     return std::make_shared<FunctionStmt>(name, params, body);
 }
 
+StmtPtr Parser::parseClass()
+{
+    auto name = consume(TokenType::IDENTIFIER, "Expected class name.");
+
+    consume(TokenType::LEFT_BRACE, "Expected '{' before class body.");
+
+    auto methods = std::make_shared<std::vector<FunctionStmtPtr>>();
+    while (!check(TokenType::RIGHT_BRACE) && !atEnd()) {
+        methods->push_back(parseFunction("method"));
+    }
+
+    consume(TokenType::RIGHT_BRACE, "Expected '}' after class body.");
+
+    return std::make_shared<ClassStmt>(name, methods);
+}
+
 StmtPtr Parser::parseDeclaration()
 {
     try {
@@ -435,6 +451,9 @@ StmtPtr Parser::parseDeclaration()
         }
         if (match(TokenType::FUN)) {
             return parseFunction("function");
+        }
+        if (match(TokenType::CLASS)) {
+            return parseClass();
         }
         return parseStatement();
 

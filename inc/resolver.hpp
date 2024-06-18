@@ -35,6 +35,7 @@ struct Resolver: public Expr::AbstractVisitor, public Stmt::AbstractVisitor
     void visitVarStmt(VarStmtPtr stmt) override;
     void visitFunctionStmt(FunctionStmtPtr stmt) override;
     void visitReturnStmt(ReturnStmtPtr stmt) override;
+    void visitClassStmt(ClassStmtPtr stmt) override;
 
     bool resolve(const std::vector<StmtPtr>& stmts);
 

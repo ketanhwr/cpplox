@@ -62,7 +62,8 @@ class Parser
     StmtPtr parseExpressionStmt();
     StmtPtr parseStatement();
     StmtPtr parseVarDeclaration();
-    StmtPtr parseFunction(const std::string& kind);
+    FunctionStmtPtr parseFunction(const std::string& kind);
+    StmtPtr parseClass();
     StmtPtr parseDeclaration();
 
     void synchronize();

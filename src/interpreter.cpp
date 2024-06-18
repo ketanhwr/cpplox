@@ -3,6 +3,7 @@
 #include "lox_exception.hpp"
 #include "native_clock.hpp"
 #include "function.hpp"
+#include "lox_class.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -343,6 +344,15 @@ void Interpreter::visitReturnStmt(ReturnStmtPtr stmt)
     }
         
     throw return_value{retValue};
+}
+
+void Interpreter::visitClassStmt(ClassStmtPtr stmt)
+{
+    env_->define(stmt->name_->lexeme_, nullptr);
+
+    auto loxClass = std::make_shared<LoxClass>(stmt->name_->lexeme_);
+
+    env_->assign(stmt->name_, loxClass);
 }
 
 bool Interpreter::isTruthy(LoxValuePtr value)
